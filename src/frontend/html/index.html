@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oddset Klubben</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+  <!-- Header -->
+  <header class="bg-gray-800 shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-green-400">Oddset Klubben</h1>
+      <nav class="space-x-4">
+        <a href="#tips" class="hover:text-green-400">Dagens Tips</a>
+        <a href="#results" class="hover:text-green-400">Resultater</a>
+        <a href="#kontakt" class="hover:text-green-400">Kontakt</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="text-center py-20 px-4 bg-gradient-to-b from-gray-900 to-gray-800">
+    <h2 class="text-5xl font-extrabold text-green-400 mb-6">Velkommen til Oddset Klubben</h2>
+    <p class="text-lg text-gray-300 max-w-2xl mx-auto">Vi deler spilforslag, resultater og statistik med præcision og passion.</p>
+  </section>
+
+  <!-- Tips Section -->
+  <section id="tips" class="py-16 px-4">
+    <h3 class="text-3xl font-bold text-center text-green-300 mb-8">Dagens Tips</h3>
+    <div class="max-w-4xl mx-auto grid gap-6 sm:grid-cols-2">
+      <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+        <h4 class="text-xl font-semibold text-green-400">⚽ Arsenal vs Chelsea</h4>
+        <p class="text-gray-300 mt-2">Tip: Begge hold scorer<br>Odds: 1.85</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+        <h4 class="text-xl font-semibold text-green-400">🎾 Alcaraz vs Sinner</h4>
+        <p class="text-gray-300 mt-2">Tip: Over 3.5 sæt<br>Odds: 2.10</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section id="results" class="py-16 px-4 bg-gray-800">
+    <h3 class="text-3xl font-bold text-center text-green-300 mb-8">Seneste Resultater</h3>
+    <div class="max-w-3xl mx-auto space-y-4">
+      <div class="flex justify-between border-b border-gray-700 pb-2">
+        <span class="text-gray-300">Brøndby - FCK</span>
+        <span class="text-green-400 font-bold">2-1 ✅</span>
+      </div>
+      <div class="flex justify-between border-b border-gray-700 pb-2">
+        <span class="text-gray-300">Real Madrid - Barcelona</span>
+        <span class="text-red-400 font-bold">0-2 ❌</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="kontakt" class="py-16 px-4 text-center">
+    <h3 class="text-3xl font-bold text-green-300 mb-4">Kontakt Os</h3>
+    <p class="text-gray-400">Har du spørgsmål eller vil du være med?<br>Email: <a href="mailto:kontakt@oddsetklubben.dk" class="text-green-400 underline">kontakt@oddsetklubben.dk</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-center py-6 text-gray-500 text-sm">
+    © 2025 Oddset Klubben. Alle rettigheder forbeholdes.
+  </footer>
+
+</body>
+</html>
