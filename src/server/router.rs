@@ -1,12 +1,13 @@
 mod login;
 mod error;
 use std::collections::HashMap;
+use urlencoding::decode;
 
 pub fn route_request(request: &str) -> String {
     let mut parts = request.split_whitespace();
     let method = parts.next().unwrap_or("GET");
     let path = parts.next().unwrap_or("/");
-    let form_data = parse_form_data(request);
+    let form_data = parse_urlencoded_form_data(request);
 
     if method == "GET" {
         return match path{
@@ -37,56 +38,23 @@ pub fn route_request(request: &str) -> String {
     }
 }
 
-/// Parses form fields from a multipart/form-data POST request.
-/// Returns an empty map if no valid form data is found.
-fn parse_form_data(request: &str) -> HashMap<String, String> {
+fn parse_urlencoded_form_data(request: &str) -> HashMap<String, String> {
     let mut form_data = HashMap::new();
 
     // Find the body (after headers)
     let body_start = match request.find("\r\n\r\n") {
         Some(pos) => pos + 4,
-        None => return form_data, // no body found
+        None => return form_data,
     };
     let body = &request[body_start..];
 
-    // Get the boundary from the Content-Type header
-    let boundary_line = request
-        .lines()
-        .find(|line| line.to_lowercase().contains("content-type: multipart/form-data; boundary="));
-    let boundary = match boundary_line {
-        Some(line) => line
-            .split("boundary=")
-            .nth(1)
-            .map(|s| s.trim())
-            .unwrap_or(""),
-        None => return form_data, // no boundary found
-    };
-
-    let boundary_full = format!("--{}", boundary);
-
-    // Iterate over form parts
-    for part in body.split(&boundary_full) {
-        if part.contains("Content-Disposition") {
-            // Get the name="..."
-            let name_line = match part.lines().find(|l| l.contains("name=")) {
-                Some(line) => line,
-                None => continue,
-            };
-            let name_start = match name_line.find("name=\"") {
-                Some(pos) => pos + 6,
-                None => continue,
-            };
-            let name_end = match name_line[name_start..].find('"') {
-                Some(pos) => name_start + pos,
-                None => continue,
-            };
-            let name = &name_line[name_start..name_end];
-
-            // Get the value after \r\n\r\n
-            let value = part.split("\r\n\r\n").nth(1).unwrap_or("").trim();
-            let value = value.trim_matches('"'); // remove extra quotes
-
-            form_data.insert(name.to_string(), value.to_string());
+    // Split key=value pairs
+    for pair in body.split('&') {
+        let mut parts = pair.splitn(2, '=');
+        if let (Some(key), Some(value)) = (parts.next(), parts.next()) {
+            let key = decode(key).unwrap_or_default();
+            let value = decode(value).unwrap_or_default();
+            form_data.insert(key.to_string(), value.to_string());
         }
     }
 

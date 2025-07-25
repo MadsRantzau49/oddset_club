@@ -6,7 +6,7 @@ use crate::database::users_db::{verify_club,add_club};
 pub fn login(username: &str, password: &str) -> String{
     let conn = establish_connection().expect("Failed to connect to DB");
     if verify_club(&conn, username, password).unwrap_or(false){
-        return match fs::read_to_string("src/frontend/html/index.html") {
+        return match fs::read_to_string("src/frontend/html/dashboard.html") {
             Ok(body) => format!(
                 "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n{}",
                 body

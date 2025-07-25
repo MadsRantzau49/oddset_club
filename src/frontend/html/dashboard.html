@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klub Oversigt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card button {
+      padding: 0.6rem 1rem;
+      background: #00a86b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    .header {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="header">Oddset Klub</h2>
+    <div class="card"><span>Progress bar</span><button>Vis</button></div>
+    <div class="card"><span>Balance chart</span><button>Vis</button></div>
+    <div class="card"><span>Tilføj kupon</span><button onclick="location.href='/tilfoj_kupon'">Tilføj</button></div>
+    <div class="card"><span>Indsæt resultat af kupon</span><button>Indsæt</button></div>
+    <div class="card"><span>Tilføj tabt væddemål</span><button>Tilføj</button></div>
+    <div class="card"><span>Statistic</span><button>Vis</button></div>
+    <div class="card"><span>Indstillinger</span><button>Rediger</button></div>
+  </div>
+</body>
+</html>
+
+<!-- tilfoj_kupon.html -->
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tilføj Kupon</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      background-color: #00a86b;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+    }
+    .toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Tilføj Kupon</h2>
+    <form class="card" action="/add_coupon" method="POST">
+      <input type="text" name="player" placeholder="Spiller" required>
+      <input type="number" name="amount" placeholder="Beløb" required>
+      <input type="number" name="potential" placeholder="Potentiel gevinst">
+      <textarea name="description" rows="3" placeholder="Beskrivelse"></textarea>
+
+      <div class="toggle">
+        <label>Skaffer freebet</label>
+        <label class="switch">
+          <input type="checkbox" name="freebet">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle">
+        <label>Frivillig donation</label>
+        <label class="switch">
+          <input type="checkbox" name="donation">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</body>
+</html>
