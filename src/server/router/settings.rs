@@ -10,7 +10,6 @@ pub fn render_settings(club_id: i64) -> String {
 }
 
 pub fn change_settings(club_id: i64, club_title: &str, saving_goal: f64, bank_money: f64) -> String{
-    println!("{} {} {} {} ", club_id, club_title, saving_goal, bank_money);
     let conn = establish_connection().expect("Failed to connect to DB");
     match change_settings_db(&conn, club_id, club_title,saving_goal,bank_money) {
         Ok(_) => {
