@@ -1,130 +1,161 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Klub Oversigt</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 1rem;
-    }
-    .container {
-      max-width: 500px;
-      margin: auto;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 1rem;
-      margin: 1rem 0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .card button {
-      padding: 0.6rem 1rem;
-      background: #00a86b;
-      color: white;
-      border: none;
-      border-radius: 8px;
-    }
-    .header {
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>📊 Club Dashboard</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2b2b45);
+            color: #fff;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background-color: #2e2e48;
+            padding: 2rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            color: #ffd700;
+        }
+
+        .progress-container {
+            background-color: #44445e;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-fill {
+            height: 24px;
+            background-color: #28a745;
+            width: {% if progress_percent is defined %}{{ progress_percent }}%{% else %}0%{% endif %};
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            line-height: 24px;
+            transition: width 0.4s ease;
+        }
+
+        .goal-text {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            color: #cfcfe8;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        nav a {
+            position: relative;
+            background-color: #ffd700;
+            color: #1e1e2f;
+            padding: 0.85rem 1.2rem;
+            border-radius: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            background-color: #ffcc00;
+        }
+
+        .notification {
+            position: absolute;
+            top: -0.6rem;
+            right: -0.6rem;
+            background-color: #ff4c4c;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 999px;
+            padding: 0.25rem 0.5rem;
+            box-shadow: 0 0 5px #000;
+        }
+
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .progress-fill {
+                font-size: 0.8rem;
+            }
+
+            nav a {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2 class="header">Oddset Klub</h2>
-    <div class="card"><span>Progress bar</span><button>Vis</button></div>
-    <div class="card"><span>Balance chart</span><button>Vis</button></div>
-    <div class="card"><span>Tilføj kupon</span><button onclick="location.href='/tilfoj_kupon'">Tilføj</button></div>
-    <div class="card"><span>Indsæt resultat af kupon</span><button>Indsæt</button></div>
-    <div class="card"><span>Tilføj tabt væddemål</span><button>Tilføj</button></div>
-    <div class="card"><span>Statistic</span><button>Vis</button></div>
-    <div class="card"><span>Indstillinger</span><button>Rediger</button></div>
-  </div>
+    <main class="card" role="main" aria-label="Club Dashboard">
+        <h1>Club Dashboard</h1>
+
+        <div class="progress-container" aria-label="Savings Progress">
+            <div class="progress-fill">
+                {% if progress_percent is defined and progress_percent > 0 %}
+                    {{ progress_percent }}%
+                {% else %}
+                    <em>Set savings goals in Settings</em>
+                {% endif %}
+            </div>
+        </div>
+        <div class="goal-text">
+            {% if current_money is defined and goal_money is defined and goal_title is defined %}
+                {{ current_money }} DKK / {{ goal_money }} DKK — {{ goal_title }}
+            {% else %}
+                <em>Savings goals can be set in Settings</em>
+            {% endif %}
+        </div>
+
+        <nav>
+            <a href="/add_odds">Add Odds</a>
+
+            <a href="/insert_result">
+                Insert Result
+                {% if missing_results is defined and missing_results > 0 %}
+                    <span class="notification">{{ missing_results }}</span>
+                {% endif %}
+            </a>
+
+            <a href="/add_lost_bet">
+                Add Lost Bet
+                {% if unresolved_bets is defined and unresolved_bets > 0 %}
+                    <span class="notification">{{ unresolved_bets }}</span>
+                {% endif %}
+            </a>
+
+            <a href="/statistics">Statistics</a>
+            <a href="/settings">Settings</a>
+
+        </nav>
+    </main>
 </body>
-</html>
 
-<!-- tilfoj_kupon.html -->
-<!DOCTYPE html>
-<html lang="da">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tilføj Kupon</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 1rem;
-    }
-    .container {
-      max-width: 500px;
-      margin: auto;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.8rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 1rem;
-      background-color: #00a86b;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-    }
-    .toggle {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Tilføj Kupon</h2>
-    <form class="card" action="/add_coupon" method="POST">
-      <input type="text" name="player" placeholder="Spiller" required>
-      <input type="number" name="amount" placeholder="Beløb" required>
-      <input type="number" name="potential" placeholder="Potentiel gevinst">
-      <textarea name="description" rows="3" placeholder="Beskrivelse"></textarea>
-
-      <div class="toggle">
-        <label>Skaffer freebet</label>
-        <label class="switch">
-          <input type="checkbox" name="freebet">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="toggle">
-        <label>Frivillig donation</label>
-        <label class="switch">
-          <input type="checkbox" name="donation">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-</body>
 </html>

@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>🎲 Oddset Club Login</title>
+    <title>🎲 Oddset Club - Create Club</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e1e2f, #2b2b45);
@@ -20,7 +19,6 @@
             align-items: center;
             padding: 1rem;
         }
-
         .card {
             background-color: #2e2e48;
             padding: 2rem;
@@ -30,14 +28,12 @@
             max-width: 400px;
             width: 100%;
         }
-
         h1 {
             margin-bottom: 1.5rem;
             font-size: 2rem;
             color: #ffd700;
             line-height: 1.2;
         }
-
         .error-message {
             background-color: #ff4c4c;
             color: #fff;
@@ -64,7 +60,6 @@
             color: #cfcfe8;
             font-size: 1rem;
         }
-
         input {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -76,7 +71,6 @@
             outline-offset: 2px;
             outline-color: #ffd700aa;
         }
-
         button {
             margin-top: 1.75rem;
             background-color: #ffd700;
@@ -91,50 +85,72 @@
             width: 100%;
             user-select: none;
         }
-
         button:hover,
         button:focus {
             background-color: #ffcc00;
         }
-
         .footer {
             margin-top: 1.5rem;
             font-size: 0.9rem;
             color: #aaa;
             line-height: 1.3;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
         }
-
+        .reverse-btn {
+            background-color: transparent;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            padding: 0.6rem 1.2rem;
+            border-radius: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+            display: inline-block;
+            line-height: 1.2;
+        }
+        .reverse-btn:hover,
+        .reverse-btn:focus {
+            background-color: #ffd700;
+            color: #1e1e2f;
+            text-decoration: none;
+        }
         @media (max-width: 320px) {
             h1 {
                 font-size: 1.5rem;
             }
-            label, input, button {
+            label, input, button, .reverse-btn {
                 font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <main class="card" role="main" aria-label="Login to your oddset club">
-        <h1>🎲 Oddset Club Login</h1>
+    <main class="card" role="main" aria-label="Create your oddset club">
+        <h1>🎲 Create Your Oddset Club</h1>
 
         <!-- ERROR MESSAGE PLACEHOLDER -->
         {% if error_message %}
             <div class="error-message">{{ error_message }}</div>
         {% endif %}
 
-        <form action="/login" method="POST" autocomplete="off">
-            <label for="username">Username 🎯</label>
+        <form action="/create_club" method="POST" autocomplete="off">
+            <label for="username">Choose a club username</label>
             <input type="text" id="username" name="username" placeholder="Your club name" required autocomplete="off" />
 
-            <label for="password">Password 🔒</label>
-            <input type="password" id="password" name="password" placeholder="Shh... keep it secret" required autocomplete="off" />
+            <label for="password">Set a secret password</label>
+            <input type="password" id="password" name="password" placeholder="Keep it safe" required autocomplete="off" />
 
-            <button type="submit" aria-label="Login to Oddset club">Let’s Bet!</button>
+            <button type="submit" aria-label="Create your Oddset club">Let’s Bet!</button>
         </form>
-        <p class="footer" aria-live="polite">
-            New here? <a href="/create_club" style="color:#ffd700; text-decoration:none;">Create a club</a> and roll the dice! 🎰
-        </p>
+        <div class="footer">
+            <a href="/login" class="reverse-btn" aria-label="Back to Login page">Already got a club? Login!</a>
+        </div>
     </main>
 </body>
 </html>

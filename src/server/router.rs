@@ -1,19 +1,34 @@
 mod login;
 mod error;
+mod render;
+mod session;
+mod dashboard;
+mod settings;
 use std::collections::HashMap;
 use urlencoding::decode;
+
+use crate::server::router::render::render_error;
 
 pub fn route_request(request: &str) -> String {
     let mut parts = request.split_whitespace();
     let method = parts.next().unwrap_or("GET");
     let path = parts.next().unwrap_or("/");
     let form_data = parse_urlencoded_form_data(request);
+    let session_id = extract_cookie_session(&request);
+    let mut club_id: i64 = 0;
+    if let Some(sid) = &session_id {
+        if let Some(club_id_tmp) = session::get_club_id_from_session(sid) {
+            club_id = club_id_tmp;
+        }
+    }
 
     if method == "GET" {
         return match path{
-            "/login" => login::home_page(),
-            "/" => login::home_page(),
-            _ => error::not_found(),
+            "/login" => render::get_html("index.html", club_id),
+            "/" => render::get_html("index.html",club_id),
+            "/create_club" => render::get_html("create_club.html",club_id),
+            "/settings" => settings::render_settings(club_id),
+            _ => render::render_error("Could not find the page your were searching for ://"),
         }
     }else if method == "POST" {
         return match path {
@@ -22,11 +37,23 @@ pub fn route_request(request: &str) -> String {
                 let password = form_data.get("password").map(String::as_str).unwrap_or("");
                 login::login(username, password)
             },
-
-            "/create_user" => {
+            "/create_club" => {
                 let username = form_data.get("username").map(String::as_str).unwrap_or("");
                 let password = form_data.get("password").map(String::as_str).unwrap_or("");
                 login::create_club(username, password)
+            },
+            "/update_club_settings" => {
+                if club_id > 0{
+                    let club_title = form_data.get("club_title").map(String::as_str).unwrap_or("");
+                    let saving_goal_str = form_data.get("saving_goal").map(String::as_str).unwrap_or("");
+                    let saving_goal: f64 = saving_goal_str.parse().unwrap_or(0.0);
+
+                    let bank_money_str = form_data.get("bank_money").map(String::as_str).unwrap_or("");
+                    let bank_money: f64 = bank_money_str.parse().unwrap_or(0.0);
+                    settings::change_settings(club_id, club_title, saving_goal, bank_money)
+                } else {
+                    render_error("Session died")
+                }
             }
             _ => error::not_found(),
         
@@ -59,4 +86,21 @@ fn parse_urlencoded_form_data(request: &str) -> HashMap<String, String> {
     }
 
     form_data
+}
+
+fn extract_cookie_session(request: &str) -> Option<String> {
+    for line in request.lines() {
+        if line.starts_with("Cookie:") {
+            let cookies = line.trim_start_matches("Cookie:").split(';');
+            for cookie in cookies {
+                let cookie = cookie.trim();
+                if let Some((key, val)) = cookie.split_once('=') {
+                    if key == "session_id" {
+                        return Some(val.to_string());
+                    }
+                }
+            }
+        }
+    }
+    None
 }

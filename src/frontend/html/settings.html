@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>⚙️ Oddset Club Settings</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2b2b45);
+            color: #fff;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background-color: #2e2e48;
+            padding: 2rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1, h2 {
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+            color: #ffd700;
+        }
+
+        label {
+            display: block;
+            margin: 1rem 0 0.4rem;
+            text-align: left;
+            color: #cfcfe8;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 0.6rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        input[type="color"] {
+            padding: 0;
+            height: 3rem;
+        }
+
+        button {
+            background-color: #ffd700;
+            color: #1e1e2f;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ffcc00;
+        }
+
+        .logout-container {
+            margin-top: 1.5rem;
+        }
+
+        .section {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            input, button {
+                font-size: 0.9rem;
+            }
+        }
+        .flash-message {
+    background-color: #28a745; /* green for success */
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.6rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.flash-message.error {
+    background-color: #dc3545; /* red for error */
+}
+
+    </style>
+</head>
+<body>
+    <main class="card" role="main" aria-label="Oddset Club Settings">
+        <h1>⚙️ Club Settings</h1>
+        {% if message is defined and message != "" %}
+            <div class="flash-message" role="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+
+
+        <form action="/update_club_settings" method="POST" autocomplete="off">
+            <label for="club_title">Club Title</label>
+            <input
+                type="text"
+                id="club_title"
+                name="club_title"
+                placeholder="Your club's name"
+                required
+                value="{{ club_title | default(value='') }}"
+            />
+
+            <label for="saving_goal">Saving Goal (DKK)</label>
+            <input
+                type="number"
+                id="saving_goal"
+                name="saving_goal"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                required
+                value="{{ saving_goal | default(value='0') }}"
+            />
+
+            <label for="bank_money">Bank Money (DKK)</label>
+            <input
+                type="number"
+                id="bank_money"
+                name="bank_money"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                required
+                value="{{ bank_money | default(value='0') }}"
+            />
+
+            <button type="submit" aria-label="Update club settings">Save Settings</button>
+        </form>
+
+        <section class="section" aria-label="Player List">
+            <h2>Player List</h2>
+
+            {# You can render players here if available in context #}
+            {% if players is defined %}
+                <ul>
+                    {% for player in players %}
+                        <li>{{ player.username }} - {{ player.color }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <em>No players added yet</em>
+            {% endif %}
+
+            <!-- Edit Players Form -->
+            <form id="edit_players_form" action="/edit_players" method="POST"></form>
+
+            <!-- Delete Player Form -->
+            <form id="delete_player_form" action="/delete_player" method="POST"></form>
+        </section>
+
+        <section class="section" aria-label="Add Player">
+            <h2>Add Player</h2>
+
+            <form action="/add_player" method="POST" autocomplete="off">
+                <label for="new_username">Username</label>
+                <input
+                    type="text"
+                    id="new_username"
+                    name="username"
+                    placeholder="New player's username"
+                    required
+                    value=""
+                />
+
+                <label for="new_color">Color</label>
+                <input
+                    type="color"
+                    id="new_color"
+                    name="color"
+                    value="#ff0000"
+                    required
+                />
+
+                <button type="submit" aria-label="Add new player">Add Player</button>
+            </form>
+        </section>
+
+        <div class="logout-container">
+            <form action="/logout" method="POST">
+                <button type="submit" aria-label="Logout from Oddset club">Logout</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
