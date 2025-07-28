@@ -16,10 +16,10 @@ pub fn get_club_id_from_session_db(conn: &rusqlite::Connection, session_id: &str
     Ok(club_id)
 }
 
-// pub fn remove_session(conn: &rusqlite::Connection, session_id: &str) -> Result<(), rusqlite::Error> {
-//     conn.execute(
-//         "DELETE FROM sessions WHERE session_id = ?1",
-//         params![session_id],
-//     )?;
-//     Ok(())
-// }
+pub fn terminate_session_db(conn: &rusqlite::Connection, session_id: &str, club_id: i64) -> Result<(), rusqlite::Error> {
+    conn.execute(
+        "DELETE FROM sessions WHERE session_id = ?1 AND club_id = ?2",
+        params![session_id, club_id],
+    )?;
+    Ok(())
+}

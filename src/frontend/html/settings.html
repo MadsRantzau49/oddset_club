@@ -22,6 +22,8 @@
         }
 
         .card {
+                position: relative; /* needed for absolute positioning inside */
+
             background-color: #2e2e48;
             padding: 2rem;
             border-radius: 1.25rem;
@@ -44,7 +46,7 @@
             color: #cfcfe8;
         }
 
-        input, button {
+        input {
             width: 100%;
             padding: 0.6rem;
             border: none;
@@ -59,6 +61,11 @@
         }
 
         button {
+            padding: 0.6rem;
+            border: none;
+            border-radius: 0.6rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
             background-color: #ffd700;
             color: #1e1e2f;
             font-weight: bold;
@@ -79,6 +86,98 @@
             text-align: left;
         }
 
+        .flash-message {
+            background-color: #28a745;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.6rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .flash-message.error {
+            background-color: #dc3545;
+        }
+
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .player-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #3a3a5c;
+            padding: 0.6rem 1rem;
+            border-radius: 0.8rem;
+        }
+
+        .edit-form, .delete-form {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .edit-form {
+            flex: 1;
+        }
+
+        .player-input {
+            flex: 1;
+            padding: 0.5rem 0.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background-color: #505073;
+            color: #fff;
+        }
+
+        .color-input {
+            width: 2.2rem;
+            height: 2.2rem;
+            border: none;
+            border-radius: 0.4rem;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.6rem;
+            border: none;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-green {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background-color: #43a047;
+        }
+
+        .btn-red {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background-color: #c82333;
+        }
+
         @media (max-width: 360px) {
             h1 {
                 font-size: 1.4rem;
@@ -88,31 +187,43 @@
                 font-size: 0.9rem;
             }
         }
-        .flash-message {
-    background-color: #28a745; /* green for success */
-    color: white;
-    padding: 0.75rem;
-    border-radius: 0.6rem;
-    margin-bottom: 1rem;
+
+.back-button {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 1.2rem;
+    color: #ffd700;
+    text-decoration: none;
     font-weight: bold;
-    text-align: center;
+    user-select: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10;
 }
 
-.flash-message.error {
-    background-color: #dc3545; /* red for error */
+.back-button:hover,
+.back-button:focus {
+    color: #ffcc00;
+    outline: none;
 }
 
     </style>
 </head>
 <body>
     <main class="card" role="main" aria-label="Oddset Club Settings">
+        <a href="/" aria-label="Return to Dashboard" class="back-button">
+    ← Back
+</a>
+
+
         <h1>⚙️ Club Settings</h1>
+
         {% if message is defined and message != "" %}
             <div class="flash-message" role="alert">
                 {{ message }}
             </div>
         {% endif %}
-
 
         <form action="/update_club_settings" method="POST" autocomplete="off">
             <label for="club_title">Club Title</label>
@@ -154,29 +265,48 @@
 
         <section class="section" aria-label="Player List">
             <h2>Player List</h2>
+            {% if users is defined and users|length > 0 %}
+                <div class="player-list">
+                    {% for user in users %}
+                        <div class="player-line">
+                            <form class="edit-form" method="POST" action="/edit_player">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
 
-            {# You can render players here if available in context #}
-            {% if players is defined %}
-                <ul>
-                    {% for player in players %}
-                        <li>{{ player.username }} - {{ player.color }}</li>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value="{{ user.username }}"
+                                    required
+                                    class="player-input"
+                                />
+
+                                <input
+                                    type="color"
+                                    name="color"
+                                    value="{{ user.color }}"
+                                    required
+                                    class="color-input"
+                                />
+
+                                <button type="submit" class="btn btn-green" aria-label="Update {{ user.username }}">Edit</button>
+                            </form>
+
+                            <form method="POST" action="/delete_player" class="delete-form">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button type="submit" class="btn btn-red" aria-label="Delete {{ user.username }}">Del</button>
+                            </form>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
             {% else %}
                 <em>No players added yet</em>
             {% endif %}
-
-            <!-- Edit Players Form -->
-            <form id="edit_players_form" action="/edit_players" method="POST"></form>
-
-            <!-- Delete Player Form -->
-            <form id="delete_player_form" action="/delete_player" method="POST"></form>
         </section>
 
         <section class="section" aria-label="Add Player">
             <h2>Add Player</h2>
 
-            <form action="/add_player" method="POST" autocomplete="off">
+            <form action="/add_user" method="POST" autocomplete="off">
                 <label for="new_username">Username</label>
                 <input
                     type="text"

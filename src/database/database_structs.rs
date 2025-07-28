@@ -9,6 +9,7 @@ pub struct SavingGoal {
 
 #[derive(Debug, Serialize)]
 pub struct User {
+    pub id: i64,
     pub username: String,
     pub color: String,
 }

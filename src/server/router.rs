@@ -43,16 +43,39 @@ pub fn route_request(request: &str) -> String {
                 login::create_club(username, password)
             },
             "/update_club_settings" => {
-                if club_id > 0{
-                    let club_title = form_data.get("club_title").map(String::as_str).unwrap_or("");
-                    let saving_goal_str = form_data.get("saving_goal").map(String::as_str).unwrap_or("");
-                    let saving_goal: f64 = saving_goal_str.parse().unwrap_or(0.0);
+                if club_id == 0{return render_error("Session died");}
+                let club_title = form_data.get("club_title").map(String::as_str).unwrap_or("");
+                let saving_goal_str = form_data.get("saving_goal").map(String::as_str).unwrap_or("");
+                let saving_goal: f64 = saving_goal_str.parse().unwrap_or(0.0);
 
-                    let bank_money_str = form_data.get("bank_money").map(String::as_str).unwrap_or("");
-                    let bank_money: f64 = bank_money_str.parse().unwrap_or(0.0);
-                    settings::change_settings(club_id, club_title, saving_goal, bank_money)
+                let bank_money_str = form_data.get("bank_money").map(String::as_str).unwrap_or("");
+                let bank_money: f64 = bank_money_str.parse().unwrap_or(0.0);
+                settings::change_settings(club_id, club_title, saving_goal, bank_money)
+            }
+            "/add_user" => {
+                if club_id == 0{return render_error("Session died");}
+                let username = form_data.get("username").map(String::as_str).unwrap_or("");
+                let color = form_data.get("color").map(String::as_str).unwrap_or("");
+                settings::add_user(club_id, username, color)
+            }
+            "/delete_player" => {
+                if club_id == 0{return render_error("Session died");}
+                let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
+                settings::delete_user(club_id, user_id)
+            }
+            "/edit_player" => {
+                if club_id == 0{return render_error("Session died");}
+                let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
+                let username = form_data.get("username").map(String::as_str).unwrap_or("");
+                let color = form_data.get("color").map(String::as_str).unwrap_or("");
+                settings::edit_user(club_id, username, color, user_id)
+            }
+            "/logout" => {
+                if club_id == 0{return render_error("Session died");}
+                if let Some(sid) = &session_id {
+                    session::terminate_session(club_id, sid)
                 } else {
-                    render_error("Session died")
+                    render::get_html("index.html", 0)
                 }
             }
             _ => error::not_found(),
