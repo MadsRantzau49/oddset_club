@@ -4,6 +4,7 @@ mod render;
 mod session;
 mod dashboard;
 mod settings;
+mod insert_money;
 use std::collections::HashMap;
 use urlencoding::decode;
 
@@ -28,6 +29,7 @@ pub fn route_request(request: &str) -> String {
             "/" => render::get_html("index.html",club_id),
             "/create_club" => render::get_html("create_club.html",club_id),
             "/settings" => settings::render_settings(club_id),
+            "/insert_money" => insert_money::render_insert_money(club_id),
             _ => render::render_error("Could not find the page your were searching for ://"),
         }
     }else if method == "POST" {
@@ -77,6 +79,13 @@ pub fn route_request(request: &str) -> String {
                 } else {
                     render::get_html("index.html", 0)
                 }
+            }
+            "/insert_money" => {
+                if club_id == 0{return render_error("Session died");}
+                let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
+                let amount_str = form_data.get("amount").map(String::as_str).unwrap_or("");
+                let amount: f64 = amount_str.parse().unwrap_or(0.0);
+                insert_money::insert_money_insertion(user_id, amount, club_id)
             }
             _ => error::not_found(),
         

@@ -4,6 +4,7 @@ pub mod club_db;
 pub mod database_structs;
 pub mod players_db;
 pub mod session_db;
+pub mod money_insertion_db;
 
 pub fn establish_connection() -> Result<Connection> {
     Connection::open("data/database.db")
@@ -44,7 +45,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             result INTEGER NOT NULL,
             volunteer_bet BOOLEAN,
             gain_freebet BOOLEAN,
-            created_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )",
         [],
@@ -55,7 +56,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             id INTEGER PRIMARY KEY,
             user_id INTEGER,
             amount REAL,
-            created_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )",
         [],

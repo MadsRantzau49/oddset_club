@@ -13,3 +13,11 @@ pub struct User {
     pub username: String,
     pub color: String,
 }
+#[derive(Debug, Serialize)]
+pub struct MoneyInsertion {
+    pub id: i64,
+    pub username: String,
+    pub color: String,
+    pub amount: f64,
+    pub created_at: String,
+}

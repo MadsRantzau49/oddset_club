@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💰 Insert Money</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #2b2b45);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background-color: #2e2e48;
+      padding: 2rem;
+      border-radius: 1.25rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+    }
+
+    h1, h2 {
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      color: #ffd700;
+    }
+
+    label {
+      display: block;
+      margin: 1rem 0 0.4rem;
+      text-align: left;
+      color: #cfcfe8;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 0.6rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      background-color: #505073;
+      color: #fff;
+    }
+
+    button {
+      padding: 0.6rem;
+      border: none;
+      border-radius: 0.6rem;
+      font-size: 1rem;
+      background-color: #ffd700;
+      color: #1e1e2f;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ffcc00;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 1.2rem;
+      color: #ffd700;
+      text-decoration: none;
+      font-weight: bold;
+      user-select: none;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .back-button:hover,
+    .back-button:focus {
+      color: #ffcc00;
+      outline: none;
+    }
+
+    .user-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .color-dot {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .log-entry {
+      background-color: #3a3a5c;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .log-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex: 1;
+    }
+
+    .log-name {
+      font-weight: bold;
+      color: #ffd700;
+    }
+
+    .log-amount {
+      font-weight: bold;
+      color: #00e676;
+    }
+
+    .btn-small {
+      font-size: 0.85rem;
+      padding: 0.4rem 0.6rem;
+      border: none;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font-weight: bold;
+      background-color: #dc3545;
+      color: white;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-small:hover {
+      background-color: #c82333;
+    }
+
+    .section {
+      margin-top: 2rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-label="Insert Money">
+    <a href="/" class="back-button" aria-label="Back to dashboard">← Back</a>
+
+    <h1>💰 Insert Money</h1>
+
+    {% if message %}
+      <div class="flash-message">{{ message }}</div>
+    {% endif %}
+
+    <form action="/insert_money" method="POST" autocomplete="off">
+      <label for="user_id">Select Player</label>
+      <select id="user_id" name="user_id" required>
+        {% for user in users %}
+          <option value="{{ user.id }}" style="color: {{ user.color }};">
+            {{ user.username }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label for="amount">Amount (DKK)</label>
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        required
+      />
+
+      <button type="submit">Insert</button>
+    </form>
+
+    <section class="section" aria-label="Transaction Log">
+      <h2>🧾 Transaction Log</h2>
+      {% if insertions and insertions|length > 0 %}
+        {% for tx in insertions %}
+          <div class="log-entry">
+            <div class="log-info">
+              <span class="color-dot" style="background-color: {{ tx.color }}"></span>
+              <span class="log-name">{{ tx.username }}</span>
+              <span class="log-amount">+{{ tx.amount }} DKK</span>
+              <span class="log-time">{{ tx.created_at }}</span>
+            </div>
+            <form action="/delete_insertion" method="POST">
+              <input type="hidden" name="insertion_id" value="{{ tx.id }}">
+              <button type="submit" class="btn-small" aria-label="Delete transaction">✕</button>
+            </form>
+          </div>
+        {% endfor %}
+      {% else %}
+        <em>No transactions yet.</em>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>
