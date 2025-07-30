@@ -5,6 +5,7 @@ mod session;
 mod dashboard;
 mod settings;
 mod insert_money;
+mod debt;
 use std::collections::HashMap;
 use urlencoding::decode;
 
@@ -30,6 +31,7 @@ pub fn route_request(request: &str) -> String {
             "/create_club" => render::get_html("create_club.html",club_id),
             "/settings" => settings::render_settings(club_id),
             "/insert_money" => insert_money::render_insert_money(club_id),
+            "/debt" => debt::render_debt(club_id),
             _ => render::render_error("Could not find the page your were searching for ://"),
         }
     }else if method == "POST" {
@@ -53,25 +55,25 @@ pub fn route_request(request: &str) -> String {
                 let bank_money_str = form_data.get("bank_money").map(String::as_str).unwrap_or("");
                 let bank_money: f64 = bank_money_str.parse().unwrap_or(0.0);
                 settings::change_settings(club_id, club_title, saving_goal, bank_money)
-            }
+            },
             "/add_user" => {
                 if club_id == 0{return render_error("Session died");}
                 let username = form_data.get("username").map(String::as_str).unwrap_or("");
                 let color = form_data.get("color").map(String::as_str).unwrap_or("");
                 settings::add_user(club_id, username, color)
-            }
+            },
             "/delete_player" => {
                 if club_id == 0{return render_error("Session died");}
                 let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
                 settings::delete_user(club_id, user_id)
-            }
+            },
             "/edit_player" => {
                 if club_id == 0{return render_error("Session died");}
                 let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
                 let username = form_data.get("username").map(String::as_str).unwrap_or("");
                 let color = form_data.get("color").map(String::as_str).unwrap_or("");
                 settings::edit_user(club_id, username, color, user_id)
-            }
+            },
             "/logout" => {
                 if club_id == 0{return render_error("Session died");}
                 if let Some(sid) = &session_id {
@@ -79,14 +81,37 @@ pub fn route_request(request: &str) -> String {
                 } else {
                     render::get_html("index.html", 0)
                 }
-            }
+            },
             "/insert_money" => {
                 if club_id == 0{return render_error("Session died");}
                 let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
                 let amount_str = form_data.get("amount").map(String::as_str).unwrap_or("");
                 let amount: f64 = amount_str.parse().unwrap_or(0.0);
                 insert_money::insert_money_insertion(user_id, amount, club_id)
-            }
+            },
+            "/delete_insertion" => {
+                if club_id == 0{return render_error("Session died");}
+                let insertion_id = form_data.get("insertion_id").map(String::as_str).unwrap_or("");
+                insert_money::delete_insertion(insertion_id, club_id)
+            },
+            "/add_debt" => {
+                if club_id == 0{return render_error("Session died");}
+                let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
+                let amount_str = form_data.get("amount").map(String::as_str).unwrap_or("");
+                let amount: f64 = amount_str.parse().unwrap_or(0.0);
+                let description = form_data.get("description").map(String::as_str).unwrap_or("");
+                debt::insert_debt(user_id, amount, description, club_id)
+            },
+            "/mark_paid" => {
+                if club_id == 0{return render_error("Session died");}
+                let debt_id = form_data.get("debt_id").map(String::as_str).unwrap_or("");
+                debt::mark_debt_paid(debt_id, club_id)
+            },
+            "/delete_debt" => {
+                if club_id == 0{return render_error("Session died");}
+                let debt_id = form_data.get("debt_id").map(String::as_str).unwrap_or("");
+                debt::delete_debt(debt_id, club_id)
+            },
             _ => error::not_found(),
         
         }

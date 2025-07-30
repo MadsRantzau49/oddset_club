@@ -21,3 +21,14 @@ pub struct MoneyInsertion {
     pub amount: f64,
     pub created_at: String,
 }
+
+#[derive(Debug, Serialize)]
+pub struct Debt{
+    pub id: i64, 
+    pub username: String,
+    pub color: String,
+    pub amount: f64,
+    pub description: String,
+    pub is_paid: bool,
+    pub created_at: String,
+}

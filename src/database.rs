@@ -5,6 +5,7 @@ pub mod database_structs;
 pub mod players_db;
 pub mod session_db;
 pub mod money_insertion_db;
+pub mod debt_db;
 
 pub fn establish_connection() -> Result<Connection> {
     Connection::open("data/database.db")
@@ -84,6 +85,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             amount REAL,
             description TEXT,
             is_paid BOOLEAN,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )",
         [],

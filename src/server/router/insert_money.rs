@@ -1,6 +1,6 @@
 use tera::Context;
 use crate::database::players_db::{get_players_from_club_id};
-use crate::database::money_insertion_db::{get_money_insertion_from_club_id,insert_money_insertion_db};
+use crate::database::money_insertion_db::{get_money_insertion_from_club_id,insert_money_insertion_db, delete_money_insertion_db};
 use crate::database::establish_connection;
 use crate::server::router::render::{render_error, render_template};
 
@@ -12,14 +12,29 @@ pub fn render_insert_money(club_id: i64) -> String {
 
 pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64) -> String {
     let conn = establish_connection().expect("Could not connect to DB");
+    let insertion_db = insert_money_insertion_db(&conn, user_id, amount);
     let mut context = get_insert_money_context(club_id);
-
-    match insert_money_insertion_db(&conn, user_id, amount){
+    match insertion_db{
         Ok(_) => {
             context.insert("message", "Transaction succesfully added");
         }
         Err(_) => {
             context.insert("message", "Transaction failed to be added");
+        }
+    }
+    render_template("insert_money.html", &context)
+}
+
+pub fn delete_insertion(insertion_id: &str, club_id: i64) -> String {
+      let conn = establish_connection().expect("Could not connect to DB");
+    let insertion_db = delete_money_insertion_db(&conn, insertion_id);
+    let mut context = get_insert_money_context(club_id);
+    match insertion_db{
+        Ok(_) => {
+            context.insert("message", "Transaction deleted succesfully");
+        }
+        Err(_) => {
+            context.insert("message", "Transaction failed to be deleted");
         }
     }
     render_template("insert_money.html", &context)

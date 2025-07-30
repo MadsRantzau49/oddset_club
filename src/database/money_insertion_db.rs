@@ -15,6 +15,8 @@ pub fn get_money_insertion_from_club_id(conn: &Connection, club_id: i64) -> Resu
         users ON money_insertions.user_id = users.id
     WHERE 
         users.club_id = ?1
+    ORDER BY 
+        money_insertions.created_at DESC;
     ")?;
     
     
@@ -38,6 +40,14 @@ pub fn insert_money_insertion_db(conn: &Connection, user_id: &str, amount: f64) 
     conn.execute(
         "INSERT INTO money_insertions (user_id, amount) VALUES (?1, ?2)",
         params![user_id, amount],
+    )?;
+    Ok(())
+}
+
+pub fn delete_money_insertion_db(conn: &Connection, insertion_id: &str) -> Result<()> {
+    conn.execute(
+        "DELETE FROM money_insertions WHERE id = ?1",
+        params![insertion_id],
     )?;
     Ok(())
 }
