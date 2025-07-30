@@ -6,6 +6,7 @@ pub mod players_db;
 pub mod session_db;
 pub mod money_insertion_db;
 pub mod debt_db;
+pub mod odds_db;
 
 pub fn establish_connection() -> Result<Connection> {
     Connection::open("data/database.db")
@@ -41,13 +42,13 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             user_id INTEGER,
             stake REAL NOT NULL,
             odds REAL NOT NULL,
-            potential_win REAL,
+            potential_win REAL NOT NULL,
             description TEXT,
             result INTEGER NOT NULL,
-            volunteer_bet BOOLEAN,
-            gain_freebet BOOLEAN,
+            is_volunteer_bet BOOLEAN,
+            is_gain_freebet BOOLEAN,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",
         [],
     )?;
@@ -58,20 +59,23 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             user_id INTEGER,
             amount REAL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",
         [],
     )?;
 
     // saving goals
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS saving_goals (
+        "CREATE TABLE IF NOT EXISTS settings (
             id INTEGER PRIMARY KEY,
             club_id INTEGER,
             money_current_bank REAL,
             money_current_betting_acount REAL,
             money_goal REAL,
             title TEXT,
+            default_stake REAL,
+            statistics_start_date TEXT DEFAULT '2000-01-01',
+            statistics_end_date TEXT DEFAULT (DATE('now')),
             FOREIGN KEY (club_id) REFERENCES clubs(id)
         )",
         [],
@@ -86,7 +90,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             description TEXT,
             is_paid BOOLEAN,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",
         [],
     )?;

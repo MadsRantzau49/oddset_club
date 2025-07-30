@@ -48,10 +48,14 @@ pub fn insert_debt_db(conn: &Connection, user_id: &str, amount: f64, description
     Ok(())
 }
 
-pub fn delete_debt_db(conn: &Connection, debt_id: &str) -> Result<()> {
+pub fn delete_debt_db(conn: &Connection, debt_id: &str, club_id: i64) -> Result<()> {
     conn.execute(
-        "DELETE FROM debts WHERE id = ?1",
-        params![debt_id],
+        "
+        DELETE FROM debts
+        WHERE id = ?1
+        AND user_id IN (SELECT id FROM users WHERE club_id = ?2)
+        ",
+        params![debt_id, club_id],
     )?;
     Ok(())
 }

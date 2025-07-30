@@ -260,6 +260,18 @@
                 value="{{ bank_money | default(value='0') }}"
             />
 
+            <label for="default_stake">Bank Money (DKK)</label>
+            <input
+                type="number"
+                id="default_stake"
+                name="default_stake"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                required
+                value="{{ default_stake | default(value='50') }}"
+            />
+
             <button type="submit" aria-label="Update club settings">Save Settings</button>
         </form>
 
@@ -295,6 +307,11 @@
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
                                 <button type="submit" class="btn btn-red" aria-label="Delete {{ user.username }}">Del</button>
                             </form>
+                            <script>
+                            function confirmDelete(event, username) {
+                                return confirm(`Are you sure you want to delete user "${username}"?`);
+                            }
+                            </script>
                         </div>
                     {% endfor %}
                 </div>

@@ -127,10 +127,14 @@
       color: #ffd700;
     }
 
-    .log-amount {
-      font-weight: bold;
-      color: #00e676;
+    .log-amount.positive {
+      color: #00e676; /* green */
     }
+
+    .log-amount.negative {
+      color: #dc3545; /* red */
+    }
+
 
     .btn-small {
       font-size: 0.85rem;
@@ -180,7 +184,6 @@
         id="amount"
         name="amount"
         step="0.01"
-        min="0"
         placeholder="0.00"
         required
       />
@@ -196,7 +199,11 @@
             <div class="log-info">
               <span class="color-dot" style="background-color: {{ tx.color }}"></span>
               <span class="log-name">{{ tx.username }}</span>
-              <span class="log-amount">+{{ tx.amount }} DKK</span>
+              {% if tx.amount > 0 %}
+                <span class="log-amount positive">+{{ tx.amount }} DKK</span>
+              {% else %}
+                <span class="log-amount negative">−{{ tx.amount|abs }} DKK</span>
+              {% endif %}
               <span class="log-time">{{ tx.created_at }}</span>
             </div>
             <form action="/delete_insertion" method="POST">

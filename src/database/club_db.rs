@@ -12,7 +12,7 @@ pub fn add_club(conn: &Connection, username: &str, password: &str) -> Result<boo
 
 pub fn add_club_settings(conn: &Connection, club_id: i64) -> Result<bool> {
     conn.execute(
-        "INSERT INTO saving_goals (club_id, money_current_bank, money_current_betting_acount, money_goal, title)
+        "INSERT INTO settings (club_id, money_current_bank, money_current_betting_acount, money_goal, title)
          VALUES (?1, ?2, ?3, ?4, ?5)",
         params![club_id, 0.0_f64, 0.0_f64, 0.0_f64, "Vacation"],
     )?;
@@ -38,17 +38,18 @@ pub fn get_club_id_from_username(conn: &Connection, username: &str) -> Result<i6
 }
 
 
-pub fn get_club_saving_goals_from_id(conn: &Connection, club_id: i64) -> Result<SavingGoal> {
-    let mut stmt = conn.prepare("SELECT money_current_bank, money_current_betting_acount, money_goal, title FROM saving_goals WHERE club_id = ?1")?;
-    let saving_goal = stmt.query_row([club_id], |row| {
+pub fn get_club_settings_from_id(conn: &Connection, club_id: i64) -> Result<SavingGoal> {
+    let mut stmt = conn.prepare("SELECT money_current_bank, money_current_betting_acount, money_goal, title, default_stake FROM settings WHERE club_id = ?1")?;
+    let settings = stmt.query_row([club_id], |row| {
         Ok(SavingGoal {
             money_current_bank: row.get(0)?,
             money_current_betting_acount: row.get(1)?,
             money_goal: row.get(2)?,
             title: row.get(3)?,
+            default_stake: row.get(4)?,
         })
     })?;
-    Ok(saving_goal)
+    Ok(settings)
 }
 
 pub fn change_settings_db(
@@ -56,13 +57,14 @@ pub fn change_settings_db(
     club_id: i64,
     club_title: &str,
     saving_goal: f64,
-    bank_money: f64
+    bank_money: f64,
+    default_stake: f64
 ) -> Result<bool> {
     conn.execute(
-        "UPDATE saving_goals
-         SET money_goal = ?1, money_current_bank = ?2, title = ?3
-         WHERE club_id = ?4",
-        params![saving_goal, bank_money, club_title, club_id],
+        "UPDATE settings
+         SET money_goal = ?1, money_current_bank = ?2, title = ?3, default_stake = ?4
+         WHERE club_id = ?5",
+        params![saving_goal, bank_money, club_title, default_stake, club_id],
     )?;
     Ok(true)
 }

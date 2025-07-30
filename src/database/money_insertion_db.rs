@@ -44,10 +44,14 @@ pub fn insert_money_insertion_db(conn: &Connection, user_id: &str, amount: f64) 
     Ok(())
 }
 
-pub fn delete_money_insertion_db(conn: &Connection, insertion_id: &str) -> Result<()> {
+pub fn delete_money_insertion_db(conn: &Connection, insertion_id: &str, club_id: i64) -> Result<()> {
     conn.execute(
-        "DELETE FROM money_insertions WHERE id = ?1",
-        params![insertion_id],
+        "
+        DELETE FROM money_insertions
+     WHERE id = ?1
+       AND user_id IN (SELECT id FROM users WHERE club_id = ?2)
+        ",
+        params![insertion_id, club_id],
     )?;
     Ok(())
 }

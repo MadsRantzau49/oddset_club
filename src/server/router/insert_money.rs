@@ -27,7 +27,7 @@ pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64) -> Strin
 
 pub fn delete_insertion(insertion_id: &str, club_id: i64) -> String {
       let conn = establish_connection().expect("Could not connect to DB");
-    let insertion_db = delete_money_insertion_db(&conn, insertion_id);
+    let insertion_db = delete_money_insertion_db(&conn, insertion_id, club_id);
     let mut context = get_insert_money_context(club_id);
     match insertion_db{
         Ok(_) => {

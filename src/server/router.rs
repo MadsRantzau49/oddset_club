@@ -6,6 +6,8 @@ mod dashboard;
 mod settings;
 mod insert_money;
 mod debt;
+mod odds;
+mod statistics;
 use std::collections::HashMap;
 use urlencoding::decode;
 
@@ -32,6 +34,9 @@ pub fn route_request(request: &str) -> String {
             "/settings" => settings::render_settings(club_id),
             "/insert_money" => insert_money::render_insert_money(club_id),
             "/debt" => debt::render_debt(club_id),
+            "/add_odds" => odds::render_add_odds(club_id),
+            "/insert_result" => odds::render_insert_odds(club_id),
+            "/statistics" => statistics::renderer_statistics(club_id),
             _ => render::render_error("Could not find the page your were searching for ://"),
         }
     }else if method == "POST" {
@@ -54,7 +59,9 @@ pub fn route_request(request: &str) -> String {
 
                 let bank_money_str = form_data.get("bank_money").map(String::as_str).unwrap_or("");
                 let bank_money: f64 = bank_money_str.parse().unwrap_or(0.0);
-                settings::change_settings(club_id, club_title, saving_goal, bank_money)
+
+                let default_stake = get_f64(&form_data, "default_stake");
+                settings::change_settings(club_id, club_title, saving_goal, bank_money, default_stake)
             },
             "/add_user" => {
                 if club_id == 0{return render_error("Session died");}
@@ -112,6 +119,29 @@ pub fn route_request(request: &str) -> String {
                 let debt_id = form_data.get("debt_id").map(String::as_str).unwrap_or("");
                 debt::delete_debt(debt_id, club_id)
             },
+            "/add_odds" => {
+                if club_id == 0{return render_error("Session died");}
+                let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
+                let description = form_data.get("description").map(String::as_str).unwrap_or("");
+                let stake = get_f64(&form_data, "stake");
+                let odds = get_f64(&form_data, "odds");
+                let potential_win = get_f64(&form_data, "potential_win");
+                let is_volunteer_bet = get_bool(&form_data, "volunteer_bet");
+                let is_gain_freebet = get_bool(&form_data, "gain_freebet");
+
+                odds::insert_odds(club_id, user_id, stake, odds, potential_win, description, is_volunteer_bet, is_gain_freebet)
+            },
+            "/update_result" => {
+                if club_id == 0{return render_error("Session died");}
+                let odds_id = form_data.get("odds_id").map(String::as_str).unwrap_or("");
+                let result = get_i64(&form_data, "result");    
+                odds::insert_result(club_id, odds_id, result)
+            },
+            "/delete_odds" => {
+                if club_id == 0{return render_error("Session died");}
+                let odds_id = form_data.get("odds_id").map(String::as_str).unwrap_or("");
+                odds::delete_odds(club_id, odds_id)
+            }
             _ => error::not_found(),
         
         }
@@ -160,4 +190,17 @@ fn extract_cookie_session(request: &str) -> Option<String> {
         }
     }
     None
+}
+
+
+fn get_f64(form_data: &HashMap<String, String>, key: &str) -> f64 {
+    form_data.get(key).and_then(|s| s.parse().ok()).unwrap_or(0.0)
+}
+
+fn get_i64(form_data: &HashMap<String, String>, key: &str) -> i64 {
+    form_data.get(key).and_then(|s| s.parse().ok()).unwrap_or(0)
+}
+
+fn get_bool(form_data: &HashMap<String, String>, key: &str) -> bool {
+    form_data.get(key).map(|v| v == "true" || v == "on" || v == "1").unwrap_or(false)
 }

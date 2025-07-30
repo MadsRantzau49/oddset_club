@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📈 View Odds</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #2b2b45);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background-color: #2e2e48;
+      padding: 2rem;
+      border-radius: 1.25rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      text-align: left;
+      max-width: 700px;
+      width: 100%;
+      position: relative;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      color: #ffd700;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: #cfcfe8;
+      text-align: left;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.5rem;
+    }
+
+    .odds-row {
+      border-radius: 0.6rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background-color: #505073;
+    }
+
+    .odds-row.win {
+      background-color: #2e7031;
+    }
+
+    .odds-row.loss {
+      background-color: #7a1e1e;
+    }
+
+    .row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .row-top div {
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .description {
+      margin-top: 0.5rem;
+      font-style: italic;
+      color: #cfcfe8;
+    }
+
+    .result-select {
+      background-color: #ffd700;
+      color: #1e1e2f;
+      border: none;
+      border-radius: 0.4rem;
+      padding: 0.4rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .delete-button {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.7rem;
+      border-radius: 0.4rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .delete-button:hover {
+      background-color: #e60000;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 1.2rem;
+      color: #ffd700;
+      text-decoration: none;
+      font-weight: bold;
+      user-select: none;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .back-button:hover,
+    .back-button:focus {
+      color: #ffcc00;
+      outline: none;
+    }
+
+    .tag {
+      font-size: 0.8rem;
+      background-color: #38385a;
+      padding: 0.2rem 0.6rem;
+      border-radius: 1rem;
+      margin-left: 0.4rem;
+    }
+
+    .username-label {
+  background-color: rgb(214, 210, 210);
+  color: #1e1e2f;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-label="View Odds">
+    <a href="/" class="back-button">← Back</a>
+    <h1>📈 View Odds</h1>
+
+    {% if message %}
+      <div class="flash-message">{{ message }}</div>
+    {% endif %}
+
+    {% if all_odds %}
+      <h2>⏳ Pending</h2>
+      {% if number_of_unresolved_odds == 0 %}
+  <p style="color: #ccc; font-style: italic; margin-bottom: 1rem;">No pending odds.</p>
+{% else %}
+      {% for odds in all_odds %}
+        {% if odds.result == 0 %}
+          <div class="odds-row">
+            <div class="row-top">
+<div class="username-label" style="color: {{ odds.color }}">{{ odds.username }}</div>
+              <div>Stake: {{ odds.stake }}</div>
+              <div>Odds: {{ odds.odds }}</div>
+              <div>Win: {{ odds.potential_win }}</div>
+              <form method="POST" action="/update_result" style="margin: 0;">
+                <input type="hidden" name="odds_id" value="{{ odds.id }}">
+                <select name="result" class="result-select" onchange="this.form.submit()">
+                  <option value="0" selected>Pending</option>
+                  <option value="1">Win</option>
+                  <option value="2">Loss</option>
+                </select>
+              </form>
+              <form method="POST" action="/delete_odds" style="margin: 0;">
+                <input type="hidden" name="odds_id" value="{{ odds.id }}">
+                <button class="delete-button" type="submit">✕</button>
+              </form>
+            </div>
+            {% if odds.description %}
+              <div class="description">{{ odds.description }}</div>
+            {% endif %}
+            <div class="description">
+              {{ odds.created_at }}
+              {% if odds.is_volunteer_bet %}
+                <span class="tag">volunteer</span>
+              {% endif %}
+              {% if odds.is_gain_freebet %}
+                <span class="tag">freebet</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% endif %}
+
+      <h2>✅ Resolved</h2>
+      {% for odds in all_odds %}
+        {% if odds.result != 0 %}
+          <div class="odds-row {% if odds.result == 1 %}win{% else %}loss{% endif %}">
+            <div class="row-top">
+<div class="username-label" style="color: {{ odds.color }}">{{ odds.username }}</div>
+              <div>Stake: {{ odds.stake }}</div>
+              <div>Odds: {{ odds.odds }}</div>
+              <div>Win: {{ odds.potential_win }}</div>
+              <div>
+                {% if odds.result == 1 %}
+                  ✅ Win
+                {% else %}
+                  ❌ Loss
+                {% endif %}
+              </div>
+              <form method="POST" action="/delete_odds" style="margin: 0;">
+                <input type="hidden" name="odds_id" value="{{ odds.id }}">
+                <button class="delete-button" type="submit">✕</button>
+              </form>
+            </div>
+            {% if odds.description %}
+              <div class="description">{{ odds.description }}</div>
+            {% endif %}
+            <div class="description">
+              {{ odds.created_at }}
+              {% if odds.is_volunteer_bet %}
+                <span class="tag">volunteer</span>
+              {% endif %}
+              {% if odds.is_gain_freebet %}
+                <span class="tag">freebet</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </main>
+</body>
+</html>

@@ -27,7 +27,7 @@ pub fn insert_debt(user_id: &str, amount: f64, description: &str, club_id: i64) 
 
 pub fn delete_debt(debt_id: &str, club_id: i64) -> String {
     let conn = establish_connection().expect("Could not connect to DB");
-    let debt_db = delete_debt_db(&conn, debt_id);
+    let debt_db = delete_debt_db(&conn, debt_id, club_id);
     let mut context = get_debt_context(club_id);
     match debt_db{
         Ok(_) => {

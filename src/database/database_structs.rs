@@ -5,6 +5,7 @@ pub struct SavingGoal {
     pub money_current_betting_acount: f64,
     pub money_goal: f64,
     pub title: String,
+    pub default_stake: f64,
 }
 
 #[derive(Debug, Serialize)]
@@ -30,5 +31,21 @@ pub struct Debt{
     pub amount: f64,
     pub description: String,
     pub is_paid: bool,
+    pub created_at: String,
+}
+
+
+#[derive(Debug, Serialize)]
+pub struct Odds{
+    pub id: i64,
+    pub username: String,
+    pub color: String,
+    pub stake: f64,
+    pub odds: f64,
+    pub potential_win: f64,
+    pub description: String, 
+    pub result: i64,
+    pub is_volunteer_bet: bool,
+    pub is_gain_freebet: bool,
     pub created_at: String,
 }
