@@ -39,7 +39,7 @@ pub fn render_set_session_cookie(name: &str, context: &Context, session_id: Stri
             "HTTP/1.1 200 OK\r\nSet-Cookie: session_id={}; Path=/; HttpOnly\r\nContent-Length: {}\r\n\r\n{}", 
             session_id, rendered.len(), rendered
         )),
-        Err(_) => ResponseBody::Text("HTTP/1.1 500 INTERNAL SERVER ERROR\r\n\r\nTemplate rendering error".to_string()),
+        Err(_) => render_error("Failed to set session cookie"),
     }
 }
 
