@@ -22,6 +22,7 @@ pub fn run(addr: &str) -> std::io::Result<()> {
 }
 
 fn handle_connection(mut stream: TcpStream) {
+    println!("ip: {}", stream.peer_addr().expect("fail to load ip"));
     let mut buffer = Vec::new();
     let mut temp_buffer = [0; 512];
 
