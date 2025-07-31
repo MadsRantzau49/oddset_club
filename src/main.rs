@@ -4,5 +4,5 @@ mod database;
 fn main() {
     let conn = database::establish_connection().expect("DB failed");
     database::init_db(&conn).expect("DB init failed");
-    server::run("127.0.0.1:8000").expect("Server failed");
+    server::run("0.0.0.0:8000").expect("Server failed");
 }
