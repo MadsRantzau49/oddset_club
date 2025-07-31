@@ -1,11 +1,12 @@
 use rusqlite::Connection;
 use tera::{Context};
 
-use crate::{database::{club_db::get_club_settings_from_id, establish_connection, money_insertion_db::get_money_insertion_from_club_id, odds_db::{self, get_all_odds_data_from_club_id, get_oldest_odds}}, server::router::{odds, render::render_template}};
+use crate::{database::{club_db::get_club_settings_from_id, establish_connection, money_insertion_db::get_money_insertion_from_club_id, odds_db::{self, get_all_odds_data_from_club_id, get_oldest_odds}}, server::router::{render::render_template}};
 use chrono::{NaiveDateTime, Utc, Duration};
+use crate::server::ResponseBody;
 
 
-pub fn renderer_statistics(club_id: i64) -> String{
+pub fn renderer_statistics(club_id: i64) -> ResponseBody{
     let context = get_statistics_context(club_id,"2021-01-05", "2026-01-01");
     render_template("statistics.html", &context)    
 }

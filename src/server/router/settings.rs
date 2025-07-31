@@ -3,13 +3,14 @@ use crate::database::establish_connection;
 use crate::database::club_db::{get_club_settings_from_id,change_settings_db};
 use crate::database::players_db::{get_players_from_club_id, add_user_db, delete_user_db,edit_user_db};
 use crate::server::router::render::{render_template};
+use crate::server::ResponseBody;
 
-pub fn render_settings(club_id: i64) -> String {
+pub fn render_settings(club_id: i64) -> ResponseBody {
     let context = get_settings_context(club_id);
     return render_template("settings.html", &context);        
 }
 
-pub fn change_settings(club_id: i64, club_title: &str, saving_goal: f64, bank_money: f64, default_stake: f64) -> String{
+pub fn change_settings(club_id: i64, club_title: &str, saving_goal: f64, bank_money: f64, default_stake: f64) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect to DB");
     match change_settings_db(&conn, club_id, club_title,saving_goal,bank_money, default_stake) {
         Ok(_) => {
@@ -25,7 +26,7 @@ pub fn change_settings(club_id: i64, club_title: &str, saving_goal: f64, bank_mo
     }
 }
 
-pub fn add_user(club_id: i64, username: &str, color: &str) -> String{
+pub fn add_user(club_id: i64, username: &str, color: &str) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect to DB");
     match add_user_db(&conn, club_id, username, color){
         Ok(_) => {
@@ -41,7 +42,7 @@ pub fn add_user(club_id: i64, username: &str, color: &str) -> String{
     }
 }
 
-pub fn edit_user(club_id: i64, username: &str, color: &str, user_id: &str) -> String{
+pub fn edit_user(club_id: i64, username: &str, color: &str, user_id: &str) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect to DB");
     match edit_user_db(&conn, club_id, username, color, user_id){
         Ok(_) => {
@@ -57,7 +58,7 @@ pub fn edit_user(club_id: i64, username: &str, color: &str, user_id: &str) -> St
     }
 }
 
-pub fn delete_user(club_id: i64, user_id: &str) -> String{
+pub fn delete_user(club_id: i64, user_id: &str) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect to DB");
     match delete_user_db(&conn, club_id, user_id){
         Ok(_) => {

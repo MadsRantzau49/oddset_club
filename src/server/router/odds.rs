@@ -4,14 +4,15 @@ use crate::database::odds_db::{insert_odds_db, get_all_odds_data_from_club_id, i
 use crate::database::club_db::{get_club_settings_from_id};
 use crate::database::establish_connection;
 use crate::server::router::render::{render_error, render_template};
+use crate::server::ResponseBody;
 
-pub fn render_add_odds(club_id: i64) -> String {
+pub fn render_add_odds(club_id: i64) -> ResponseBody {
     if club_id == 0 {return render_error("Session dead");}
     let context = get_insert_odds_context(club_id);
     render_template("add_odds.html", &context)
 }
 
-pub fn insert_odds(club_id: i64, user_id: &str, stake: f64, odds: f64, potential_win: f64, description: &str, is_volunteer_bet: bool, is_gain_freebet: bool) -> String {
+pub fn insert_odds(club_id: i64, user_id: &str, stake: f64, odds: f64, potential_win: f64, description: &str, is_volunteer_bet: bool, is_gain_freebet: bool) -> ResponseBody {
     let conn = establish_connection().expect("Could not connect to DB");
     let mut context = get_insert_odds_context(club_id);
     match insert_odds_db(&conn, user_id, stake, odds, potential_win, description, 0 ,is_volunteer_bet, is_gain_freebet) {
@@ -25,13 +26,13 @@ pub fn insert_odds(club_id: i64, user_id: &str, stake: f64, odds: f64, potential
     render_template("add_odds.html", &context)
 }
 
-pub fn render_insert_odds(club_id: i64) -> String {
+pub fn render_insert_odds(club_id: i64) -> ResponseBody {
     if club_id == 0 {return render_error("Session dead");}
     let context = get_insert_result_context(club_id);
     render_template("insert_result.html", &context)
 }
 
-pub fn insert_result(club_id: i64, odds_id: &str, result: i64) -> String{
+pub fn insert_result(club_id: i64, odds_id: &str, result: i64) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect to db");
     let update = insert_result_db(&conn, club_id,odds_id,result);
     let mut context = get_insert_result_context(club_id);
@@ -46,7 +47,7 @@ pub fn insert_result(club_id: i64, odds_id: &str, result: i64) -> String{
     render_template("insert_result.html", &context)
 }
 
-pub fn delete_odds(club_id: i64, odds_id: &str) -> String{
+pub fn delete_odds(club_id: i64, odds_id: &str) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect DB");
     let delete = delete_odds_db(&conn, club_id, odds_id);
     let mut context = get_insert_result_context(club_id);

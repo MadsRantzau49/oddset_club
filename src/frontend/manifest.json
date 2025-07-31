@@ -1,0 +1,24 @@
+{
+  "name": "Oddset Klubben",
+  "short_name": "Odds K",
+  "description": "Oddset Klubben",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4285f4",
+  "icons": [
+    {
+      "src": "image/logo",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "image/logo",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/",
+  "orientation": "portrait-primary",
+  "lang": "en-US"
+}

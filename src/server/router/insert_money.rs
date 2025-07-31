@@ -3,14 +3,15 @@ use crate::database::players_db::{get_players_from_club_id};
 use crate::database::money_insertion_db::{get_money_insertion_from_club_id,insert_money_insertion_db, delete_money_insertion_db};
 use crate::database::establish_connection;
 use crate::server::router::render::{render_error, render_template};
+use crate::server::ResponseBody;
 
-pub fn render_insert_money(club_id: i64) -> String {
+pub fn render_insert_money(club_id: i64) -> ResponseBody {
     if club_id == 0 {return render_error("Session dead");}
     let context = get_insert_money_context(club_id);
     render_template("insert_money.html", &context)
 }
 
-pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64) -> String {
+pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64) -> ResponseBody {
     let conn = establish_connection().expect("Could not connect to DB");
     let insertion_db = insert_money_insertion_db(&conn, user_id, amount);
     let mut context = get_insert_money_context(club_id);
@@ -25,7 +26,7 @@ pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64) -> Strin
     render_template("insert_money.html", &context)
 }
 
-pub fn delete_insertion(insertion_id: &str, club_id: i64) -> String {
+pub fn delete_insertion(insertion_id: &str, club_id: i64) -> ResponseBody {
       let conn = establish_connection().expect("Could not connect to DB");
     let insertion_db = delete_money_insertion_db(&conn, insertion_id, club_id);
     let mut context = get_insert_money_context(club_id);

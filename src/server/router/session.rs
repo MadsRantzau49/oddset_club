@@ -5,6 +5,7 @@ use uuid::Uuid;
 use crate::database::session_db::{create_session_db, get_club_id_from_session_db, terminate_session_db};
 use crate::database::establish_connection;
 use super::render::{get_html};
+use crate::server::ResponseBody;
 
 lazy_static! {
     static ref SESSION_STORE: Mutex<HashMap<String, i64>> = Mutex::new(HashMap::new());
@@ -24,7 +25,7 @@ pub fn get_club_id_from_session(session_id: &String) -> Option<i64> {
     }
 }
 
-pub fn terminate_session(club_id: i64, session_id: &String) -> String {
+pub fn terminate_session(club_id: i64, session_id: &String) -> ResponseBody {
     let conn: rusqlite::Connection = establish_connection().expect("Failed to connect to DB");
     match terminate_session_db(&conn, session_id, club_id) {
         Ok(_) => get_html("index.html", 0),

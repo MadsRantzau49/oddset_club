@@ -89,6 +89,20 @@ fn handle_connection(mut stream: TcpStream) {
     let full_request = format!("{}\r\n\r\n{}", headers_str, String::from_utf8_lossy(&body_bytes));
 
     let response = router::route_request(&full_request);
-    let _ = stream.write_all(response.as_bytes());
+
+    match response {
+        ResponseBody::Text(text) => {
+            let _ = stream.write_all(text.as_bytes());
+        }
+        ResponseBody::Binary(bytes) => {
+            let _ = stream.write_all(&bytes);
+        }
+    }
+
     let _ = stream.flush();
+}
+
+pub enum ResponseBody {
+    Text(String),     
+    Binary(Vec<u8>), 
 }

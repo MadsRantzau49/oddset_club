@@ -1,5 +1,4 @@
 mod login;
-mod error;
 mod render;
 mod session;
 mod dashboard;
@@ -8,12 +7,13 @@ mod insert_money;
 mod debt;
 mod odds;
 mod statistics;
+mod app;
 use std::collections::HashMap;
 use urlencoding::decode;
-
+use super::{ResponseBody};
 use crate::server::router::render::render_error;
 
-pub fn route_request(request: &str) -> String {
+pub fn route_request(request: &str) -> ResponseBody {
     let mut parts = request.split_whitespace();
     let method = parts.next().unwrap_or("GET");
     let path = parts.next().unwrap_or("/");
@@ -25,7 +25,6 @@ pub fn route_request(request: &str) -> String {
             club_id = club_id_tmp;
         }
     }
-
     if method == "GET" {
         return match path{
             "/login" => render::get_html("index.html", club_id),
@@ -37,6 +36,8 @@ pub fn route_request(request: &str) -> String {
             "/add_odds" => odds::render_add_odds(club_id),
             "/insert_result" => odds::render_insert_odds(club_id),
             "/statistics" => statistics::renderer_statistics(club_id),
+            "/manifest" => app::get_manifest(),
+            "/image/logo" => app::get_logo(),
             _ => render::render_error("Could not find the page your were searching for ://"),
         }
     }else if method == "POST" {
@@ -142,13 +143,13 @@ pub fn route_request(request: &str) -> String {
                 let odds_id = form_data.get("odds_id").map(String::as_str).unwrap_or("");
                 odds::delete_odds(club_id, odds_id)
             }
-            _ => error::not_found(),
+            _ => render_error("404 page not found"),
         
         }
 
 
     } else {
-        "HTTP/1.1 404 NOT FOUND\r\n\r\n404 Not Found".to_string()
+        render_error("404 page not found")
     }
 }
 

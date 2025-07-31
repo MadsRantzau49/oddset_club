@@ -4,8 +4,9 @@ use super::session::{create_session};
 use super::dashboard::{load_dashboard_context};
 use crate::database::establish_connection;
 use crate::database::club_db::{verify_club,add_club,club_already_exist_db,get_club_id_from_username, add_club_settings};
+use crate::server::ResponseBody;
 
-pub fn login(username: &str, password: &str) -> String {
+pub fn login(username: &str, password: &str) -> ResponseBody {
     let conn: rusqlite::Connection = establish_connection().expect("Failed to connect to DB");
     let mut context = Context::new();
 
@@ -25,7 +26,7 @@ pub fn login(username: &str, password: &str) -> String {
     }
 }
 
-pub fn create_club(username: &str, password: &str) -> String{
+pub fn create_club(username: &str, password: &str) -> ResponseBody{
     let conn = establish_connection().expect("Failed to connect to DB");
     if club_already_exist_db(&conn, username).unwrap_or(false){
         let mut context = Context::new();
