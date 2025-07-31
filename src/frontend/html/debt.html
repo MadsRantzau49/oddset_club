@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="manifest" crossorigin="use-credentials" href="/manifest">
+
   <title>💸 Add Debt</title>
   <style>
     *, *::before, *::after {
@@ -177,6 +179,38 @@
       margin-top: 2rem;
       text-align: left;
     }
+
+    .flash-message {
+    background-color: #0c76da;
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    box-shadow: 0 0 8px #ffffffaa;
+    user-select: none;
+    animation:
+        shake 0.3s ease,
+        fadeOut 0.5s ease 2s forwards;
+}
+
+/* Shake animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* Fade out after 3s */
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
   </style>
 </head>
 <body>

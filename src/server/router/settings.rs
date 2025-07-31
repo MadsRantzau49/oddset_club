@@ -2,10 +2,11 @@ use tera::Context;
 use crate::database::establish_connection;
 use crate::database::club_db::{get_club_settings_from_id,change_settings_db};
 use crate::database::players_db::{get_players_from_club_id, add_user_db, delete_user_db,edit_user_db};
-use crate::server::router::render::{render_template};
+use crate::server::router::render::{render_template, render_error};
 use crate::server::ResponseBody;
 
 pub fn render_settings(club_id: i64) -> ResponseBody {
+    if club_id == 0 {return render_error("Session dead");}
     let context = get_settings_context(club_id);
     return render_template("settings.html", &context);        
 }

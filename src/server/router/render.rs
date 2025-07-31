@@ -16,10 +16,7 @@ pub fn get_html(name: &str, club_id: i64) -> ResponseBody{
         context = load_dashboard_context(club_id);
         return render_template("dashboard.html", &context);
     }
-    return match TEMPLATES.render(&name, &context) {
-        Ok(rendered) => ResponseBody::Text(format!("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n{}", rendered)),
-        Err(_) => ResponseBody::Text("HTTP/1.1 500 INTERNAL SERVER ERROR\r\n\r\nTemplate rendering error".to_string()),
-    }
+    render_template(name, &context)
 }
 
 pub fn render_template(name: &str, context: &Context) -> ResponseBody{

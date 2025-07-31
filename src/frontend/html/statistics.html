@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="manifest" crossorigin="use-credentials" href="/manifest">
+
   <title>📈 Statistics</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -129,6 +131,38 @@
     button[type="submit"]:hover {
       background-color: #ffcc00;
     }
+
+    .flash-message {
+    background-color: #0c76da;
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    box-shadow: 0 0 8px #ffffffaa;
+    user-select: none;
+    animation:
+        shake 0.3s ease,
+        fadeOut 0.5s ease 2s forwards;
+}
+
+/* Shake animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* Fade out after 3s */
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -136,7 +170,11 @@
   <main class="card" role="main" aria-label="Statistics Overview">
     <a href="/" class="back-button">← Back</a>
     <h1>📈 Statistics</h1>
-
+{% if message is defined and message != "" %}
+            <div class="flash-message" >
+                {{ message }}
+            </div>
+        {% endif %}
     <div class="stats-grid">
       <div class="stat">
         <strong>Total Balance</strong>

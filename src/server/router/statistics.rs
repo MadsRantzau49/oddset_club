@@ -1,7 +1,7 @@
 use rusqlite::Connection;
 use tera::{Context};
 
-use crate::{database::{club_db::get_club_settings_from_id, establish_connection, money_insertion_db::get_money_insertion_from_club_id, odds_db::{self, get_all_odds_data_from_club_id, get_oldest_odds}}, server::router::{render::render_template}};
+use crate::{database::{club_db::get_club_settings_from_id, establish_connection, money_insertion_db::get_money_insertion_from_club_id, odds_db::{get_all_odds_data_from_club_id, get_oldest_odds}}, server::router::{render::render_template}};
 use chrono::{NaiveDateTime, Utc, Duration};
 use crate::server::ResponseBody;
 
@@ -118,10 +118,10 @@ fn get_total_odds_win(conn: &Connection, club_id: i64) -> f64{
 
 
 pub fn expected_travel_date(conn: &Connection, club_id: i64) -> String {
-    match odds_db::insert_old_odds_db(conn) {
-        Ok(_) => {},
-        Err(e) => {println!("{}",e);}
-    }
+    // match odds_db::insert_old_odds_db(conn) {
+    //     Ok(_) => {},
+    //     Err(e) => {println!("{}",e);}
+    // }
     let money_earned = get_total_money(conn, club_id);
     let money_goal = match get_club_settings_from_id(conn, club_id) {
         Ok(setting) => setting.money_goal,
