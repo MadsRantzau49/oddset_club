@@ -38,6 +38,7 @@ pub fn route_request(request: &str) -> ResponseBody {
             "/statistics" => statistics::renderer_statistics(club_id),
             "/manifest" => app::get_manifest(),
             "/image/logo" => app::get_logo(),
+            "/upload_excel_sheet" => odds::insert_odds_from_excel(club_id),
             _ => render::render_error("Could not find the page your were searching for ://"),
         }
     }else if method == "POST" {
@@ -95,7 +96,9 @@ pub fn route_request(request: &str) -> ResponseBody {
                 let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
                 let amount_str = form_data.get("amount").map(String::as_str).unwrap_or("");
                 let amount: f64 = amount_str.parse().unwrap_or(0.0);
-                insert_money::insert_money_insertion(user_id, amount, club_id)
+                let is_valid_balance = get_bool(&form_data, "is_valid_balance");
+
+                insert_money::insert_money_insertion(user_id, amount, club_id, is_valid_balance)
             },
             "/delete_insertion" => {
                 if club_id == 0{return render_error("Session died");}
@@ -129,8 +132,8 @@ pub fn route_request(request: &str) -> ResponseBody {
                 let potential_win = get_f64(&form_data, "potential_win");
                 let is_volunteer_bet = get_bool(&form_data, "volunteer_bet");
                 let is_gain_freebet = get_bool(&form_data, "gain_freebet");
-
-                odds::insert_odds(club_id, user_id, stake, odds, potential_win, description, is_volunteer_bet, is_gain_freebet)
+                let is_freebet = get_bool(&form_data, "is_freebet");
+                odds::insert_odds(club_id, user_id, stake, odds, potential_win, description, is_volunteer_bet, is_gain_freebet, is_freebet)
             },
             "/update_result" => {
                 if club_id == 0{return render_error("Session died");}

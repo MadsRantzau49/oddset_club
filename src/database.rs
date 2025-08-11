@@ -47,6 +47,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             result INTEGER NOT NULL,
             is_volunteer_bet BOOLEAN,
             is_gain_freebet BOOLEAN,
+            is_freebet BOOLEAN,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",
@@ -58,6 +59,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
             id INTEGER PRIMARY KEY,
             user_id INTEGER,
             amount REAL,
+            is_valid_balance BOOLEAN,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",

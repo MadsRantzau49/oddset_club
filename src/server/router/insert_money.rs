@@ -11,15 +11,16 @@ pub fn render_insert_money(club_id: i64) -> ResponseBody {
     render_template("insert_money.html", &context)
 }
 
-pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64) -> ResponseBody {
+pub fn insert_money_insertion(user_id: &str, amount: f64, club_id: i64, is_volunteer_bet: bool) -> ResponseBody {
     let conn = establish_connection().expect("Could not connect to DB");
-    let insertion_db = insert_money_insertion_db(&conn, user_id, amount);
+    let insertion_db = insert_money_insertion_db(&conn, user_id, amount, is_volunteer_bet);
     let mut context = get_insert_money_context(club_id);
     match insertion_db{
         Ok(_) => {
             context.insert("message", "Transaction succesfully added");
         }
-        Err(_) => {
+        Err(e) => {
+            println!("{e}");
             context.insert("message", "Transaction failed to be added");
         }
     }

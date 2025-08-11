@@ -1,11 +1,11 @@
 use rusqlite::{Connection, Result, params};
 
-use crate::database::database_structs::{Odds};
+use crate::database::database_structs::{Odds, OddsStatistic};
 
-pub fn insert_odds_db(conn: &Connection, user_id: &str, stake: f64, odds: f64, potential_win: f64, description: &str, result: i64, is_volunteer_bet: bool, is_gain_freebet: bool) -> Result<()> {
+pub fn insert_odds_db(conn: &Connection, user_id: &str, stake: f64, odds: f64, potential_win: f64, description: &str, result: i64, is_volunteer_bet: bool, is_gain_freebet: bool, is_freebet: bool) -> Result<()> {
     conn.execute(
-        "INSERT INTO odds (user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
-        params![user_id, stake, odds, potential_win, description, result as i64, is_volunteer_bet, is_gain_freebet],
+        "INSERT INTO odds (user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet, is_freebet ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+        params![user_id, stake, odds, potential_win, description, result as i64, is_volunteer_bet, is_gain_freebet, is_freebet],
     )?;
     Ok(())
 }
@@ -23,7 +23,9 @@ pub fn get_all_odds_data_from_club_id(conn: &Connection, club_id: i64) -> Result
         odds.result,
         odds.is_volunteer_bet,
         odds.is_gain_freebet,
-        odds.created_at
+        odds.created_at,
+        users.id,
+        odds.is_freebet
     FROM 
         odds
     JOIN 
@@ -38,6 +40,7 @@ pub fn get_all_odds_data_from_club_id(conn: &Connection, club_id: i64) -> Result
     let odds_iter = stmt.query_map([club_id], |row| {
         Ok(Odds {
             id: row.get(0)?,
+            user_id: row.get(11)?,
             username: row.get(1)?,
             color: row.get(2)?,
             stake: row.get(3)?,
@@ -47,6 +50,7 @@ pub fn get_all_odds_data_from_club_id(conn: &Connection, club_id: i64) -> Result
             result: row.get(7)?,
             is_volunteer_bet: row.get(8)?,
             is_gain_freebet: row.get(9)?,
+            is_freebet: row.get(12)?,
             created_at: row.get(10)?,
         })
 
@@ -57,6 +61,41 @@ pub fn get_all_odds_data_from_club_id(conn: &Connection, club_id: i64) -> Result
     }
     Ok(oddss)
 }
+
+pub fn get_user_odds_data(conn: &Connection, user_id: i64) -> Result<Vec<OddsStatistic>> {
+    let mut stmt = conn.prepare("
+    SELECT 
+        stake,
+        odds,
+        potential_win,
+        result,
+        is_volunteer_bet,
+        is_gain_freebet
+    FROM 
+        odds
+    WHERE 
+        user_id = ?1;
+    ")?;
+    
+    
+    let odds_iter = stmt.query_map([user_id], |row| {
+        Ok(OddsStatistic {
+            stake: row.get(0)?,
+            odds: row.get(1)?,
+            potential_win: row.get(2)?,
+            result: row.get(3)?,
+            is_volunteer_bet: row.get(4)?,
+            is_gain_freebet: row.get(5)?,
+        })
+
+    })?;
+    let mut oddss = Vec::new();
+    for odds in odds_iter {
+        oddss.push(odds?);
+    }
+    Ok(oddss)
+}
+
 
 pub fn insert_result_db(conn: &Connection, club_id: i64, odds_id: &str, result: i64) -> Result<()>{
     conn.execute(
@@ -111,11 +150,18 @@ pub fn get_oldest_odds(conn: &Connection, club_id: i64) -> Result<String> {
     result
 }
 
-
-pub fn insert_old_odds_db(conn: &Connection) -> Result<()> {
+pub fn insert_sheet_odds_db(conn: &Connection, user_id: i64, stake: f64, odds: f64, potential_win: f64, description: String, result: i64, is_volunteer_bet: bool, is_gain_freebet: bool, created_at: String, is_freebet: bool) -> Result<()> {
     conn.execute(
-        "INSERT INTO odds (user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet, created_at ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
-        params![1, 50, 2, 100, "description", 1, 0, 0, "2025-07-29 17:30:30"],
+        "INSERT INTO odds (user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet, created_at, is_freebet ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+        params![user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet, created_at, is_freebet],
+    )?;
+    Ok(())
+}
+
+pub fn delete_all_odds(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "DELETE FROM odds",
+        [],
     )?;
     Ok(())
 }

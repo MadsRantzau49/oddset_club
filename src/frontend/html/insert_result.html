@@ -223,7 +223,10 @@
                 <span class="tag">volunteer</span>
               {% endif %}
               {% if odds.is_gain_freebet %}
-                <span class="tag">freebet</span>
+                <span class="tag">gain freebet</span>
+              {% endif %}              
+              {% if odds.is_freebet %}
+                <span class="tag">is freebet</span>
               {% endif %}
             </div>
           </div>

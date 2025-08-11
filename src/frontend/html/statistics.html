@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="manifest" crossorigin="use-credentials" href="/manifest">
+  <link rel="manifest" crossorigin="use-credentials" href="/manifest" />
 
   <title>📈 Statistics</title>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
@@ -21,12 +22,12 @@
       min-height: 100vh;
     }
 
-    .card {
+    main.card {
       background-color: #2e2e48;
       padding: 1rem;
       border-radius: 1rem;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      max-width: 400px;
+      max-width: 420px;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -41,34 +42,42 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      font-size: 0.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
     }
 
     .stat {
       background-color: #3a3a5c;
-      padding: 0.5rem;
+      padding: 0.6rem 0.8rem;
       border-radius: 0.5rem;
       text-align: left;
       line-height: 1.2;
+      color: #fff;
     }
 
     .stat strong {
       display: block;
       color: #ffd700;
       font-weight: 600;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.2rem;
     }
 
     .chart-container {
-      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
     }
 
     canvas {
       width: 100% !important;
       height: auto !important;
-      max-height: 200px;
+      max-height: 220px;
+      border-radius: 0.8rem;
+      background-color: #1e1e2f;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
     }
 
     .back-button {
@@ -83,162 +92,149 @@
     .back-button:hover {
       color: #ffcc00;
     }
-
-    form {
-      margin-top: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    label {
-      font-size: 0.75rem;
-      color: #ffd700;
-      display: block;
-      margin-bottom: 0.2rem;
-    }
-
-    .form-group {
-      flex: 1 1 45%;
-      min-width: 140px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    input[type="date"] {
-      border-radius: 0.5rem;
-      border: none;
-      padding: 0.4rem 0.5rem;
-      font-size: 0.9rem;
-      font-family: inherit;
-    }
-
-    button[type="submit"] {
-      flex: 1 1 100%;
-      margin-top: 0.5rem;
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      background-color: #ffd700;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: bold;
-      color: #2e2e48;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #ffcc00;
-    }
-
-    .flash-message {
-    background-color: #0c76da;
-    color: #ffffff;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-    box-shadow: 0 0 8px #ffffffaa;
-    user-select: none;
-    animation:
-        shake 0.3s ease,
-        fadeOut 0.5s ease 2s forwards;
-}
-
-/* Shake animation */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
-}
-
-/* Fade out after 3s */
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        visibility: hidden;
-        height: 0;
-        margin: 0;
-        padding: 0;
-    }
-}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <main class="card" role="main" aria-label="Statistics Overview">
     <a href="/" class="back-button">← Back</a>
     <h1>📈 Statistics</h1>
-{% if message is defined and message != "" %}
-            <div class="flash-message" >
-                {{ message }}
-            </div>
-        {% endif %}
-    <div class="stats-grid">
-      <div class="stat">
-        <strong>Total Balance</strong>
-        {% if total_balance is defined %}{{ total_balance }} kr{% else %}-{% endif %}
-      </div>
-      <div class="stat">
-        <strong>Total Deposit</strong>
-        {% if total_deposit is defined %}{{ total_deposit }} kr{% else %}-{% endif %}
-      </div>
-      <div class="stat">
-        <strong>Total Money</strong>
-        {% if total_money is defined %}{{ total_money }} kr{% else %}-{% endif %}
-      </div>
-      <div class="stat">
-        <strong>Total Oddset Balance</strong>
-        {% if total_oddset_balance is defined %}{{ total_oddset_balance }} kr{% else %}-{% endif %}
-      </div>      
-      <div class="stat">
-        <strong>Travel Date</strong>
-        {% if expected_travel_date is defined %}{{ expected_travel_date }}{% else %}-{% endif %}
-      </div>
 
+    <div class="stats-grid">
+      <div class="stat"><strong>Total Balance</strong>{{ total_balance }} kr</div>
+      <div class="stat"><strong>Total Deposit</strong>{{ total_deposit }} kr</div>
+      <div class="stat"><strong>Total Money</strong>{{ total_money }} kr</div>
+      <div class="stat"><strong>Total Oddset Balance</strong>{{ total_oddset_balance }} kr</div>      
+      <div class="stat"><strong>Travel Date</strong>{{ expected_travel_date }}</div>
     </div>
 
     <div class="chart-container">
-      <canvas id="betsChart"></canvas>
+      <canvas id="totalBalanceChart"></canvas>
+      <canvas id="freebetsChart"></canvas>
+      <canvas id="totalWonChart"></canvas>
+      <canvas id="winRateChart"></canvas>
+      <canvas id="depositChart"></canvas>
     </div>
-
-<form method="GET" action="">
-  <div class="form-group">
-    <label for="start_date">Start Date</label>
-    <input type="date" id="start_date" name="start_date" value="{% if start_date is defined %}{{ start_date }}{% endif %}" />
-  </div>
-  <div class="form-group">
-    <label for="end_date">End Date</label>
-    <input type="date" id="end_date" name="end_date" value="{% if end_date is defined %}{{ end_date }}{% endif %}" />
-  </div>
-  <button type="submit">Filter</button>
-</form>
-
-    <script>
-      {% if bet_labels is defined and bet_profits is defined and bet_colors is defined %}
-      const ctx = document.getElementById('betsChart').getContext('2d');
-      const betsChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: {{ bet_labels | json_encode() | safe }},
-          datasets: [{
-            label: 'Net Profit',
-            data: {{ bet_profits | json_encode() | safe }},
-            backgroundColor: {{ bet_colors | json_encode() | safe }},
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-      {% else %}
-      // No data to display chart
-      {% endif %}
-    </script>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+  <script>
+    const players = {{ player_stats_list | json_encode() | safe }};
+    const names = players.map(p => p.username);
+    const colors = players.map(p => p.color);
+
+    function percentile(arr, p) {
+      if (arr.length === 0) return 0;
+      const sorted = arr.slice().sort((a, b) => a - b);
+      const index = (sorted.length - 1) * p;
+      const lower = Math.floor(index);
+      const upper = Math.ceil(index);
+      if (lower === upper) return sorted[lower];
+      const weight = index - lower;
+      return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+    }
+
+function makeChart(id, label, field, type='bar', suffix='') {
+  const ctx = document.getElementById(id).getContext('2d');
+  const dataValues = players.map(p => p[field]);
+  const barColors = players.map(p => p.color);
+
+  const p10 = percentile(dataValues, 0.1);
+  const p90 = percentile(dataValues, 0.9);
+
+  let range = p90 - p10;
+  let yMin = p10 - range * 0.1;
+  let yMax = p90 + range * 0.1;
+
+  if (range < 0.5) {
+    const median = percentile(dataValues, 0.5);
+    yMin = median - 0.5;
+    yMax = median + 0.5;
+  }
+  if (range === 0) {
+    yMin = dataValues[0] - 1;
+    yMax = dataValues[0] + 1;
+  }
+  if (range >= 0.5 && range < 5) {
+    const mid = (p10 + p90) / 2;
+    yMin = mid - range;
+    yMax = mid + range;
+  }
+
+  new Chart(ctx, {
+    type: type,
+    data: {
+      labels: names,
+      datasets: [{
+        label: label,
+        data: dataValues,
+        backgroundColor: barColors,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      layout: { padding: 10 },
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: label,
+          color: '#fff',         // white text
+          font: { size: 14, weight: 'bold' }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.parsed.y + suffix
+          },
+          bodyColor: '#fff',      // tooltip text white
+          backgroundColor: 'rgba(0,0,0,0.7)'
+        },
+       datalabels: {
+  anchor: 'center',
+  align: 'center',
+  color: '#fff',
+  font: { weight: 'bold', size: 12 },
+  formatter: value => value + suffix,
+  clamp: false,
+  clip: false,
+  backgroundColor: null,
+  padding: 0,
+
+  textShadowColor: 'rgba(0, 0, 0, 0.5)', // subtle black shadow
+  textShadowBlur: 2,                      // small blur for shadow
+},
+
+      },
+      scales: {
+        y: {
+          min: yMin,
+          max: yMax,
+          ticks: {
+            color: '#fff',        // white text
+            font: { size: 11 },
+            maxTicksLimit: 5
+          },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }  // lighter white grid
+        },
+        x: {
+          ticks: { color: '#fff', font: { size: 11 } }, // white text
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+
+    makeChart('totalBalanceChart', 'Total Balance (kr)', 'total_balance');
+    makeChart('totalWonChart', 'Total Won (kr)', 'total_won');
+    makeChart('winRateChart', 'Win Rate %', 'winrate', 'bar', '%');
+    makeChart('depositChart', 'Deposit (kr)', 'total_deposit');
+    makeChart('freebetsChart', 'amount of Free Bets', 'amount_of_freebets');
+  </script>
 </body>
 </html>

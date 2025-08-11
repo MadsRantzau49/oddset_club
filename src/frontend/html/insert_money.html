@@ -39,6 +39,14 @@
       font-size: 1.6rem;
       color: #ffd700;
     }
+    .tag {
+  font-size: 0.8rem;
+  background-color: #38385a;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  margin-left: 0.4rem;
+}
+
 
     label {
       display: block;
@@ -190,6 +198,68 @@
         padding: 0;
     }
 }
+
+/* Custom checkbox styles */
+    .checkbox-container {
+      display: block;
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.2rem;
+      cursor: pointer;
+      font-size: 1rem;
+      user-select: none;
+      color: #cfcfe8;
+      text-align: left;
+    }
+
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkmark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 1.8rem;
+      width: 1.8rem;
+      background-color: #505073;
+      border-radius: 0.4rem;
+      transition: background-color 0.3s ease;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    }
+
+    .checkbox-container:hover input ~ .checkmark {
+      background-color: #6c6ca0;
+    }
+
+    .checkbox-container input:checked ~ .checkmark {
+      background-color: #ffd700;
+      box-shadow: 0 0 8px #ffd700;
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .checkbox-container input:checked ~ .checkmark:after {
+      display: block;
+    }
+
+    .checkbox-container .checkmark:after {
+      left: 0.55rem;
+      top: 0.22rem;
+      width: 0.5rem;
+      height: 1rem;
+      border: solid #1e1e2f;
+      border-width: 0 0.3rem 0.3rem 0;
+      transform: rotate(45deg);
+    }
   </style>
 </head>
 <body>
@@ -222,6 +292,11 @@
         required
       />
 
+      <label class="checkbox-container">Counts in balance
+        <input type="checkbox" id="is_valid_balance" name="is_valid_balance" checked/>
+        <span class="checkmark"></span>
+      </label>
+
       <button type="submit">Insert</button>
     </form>
 
@@ -229,23 +304,27 @@
       <h2>🧾 Transaction Log</h2>
       {% if insertions and insertions|length > 0 %}
         {% for tx in insertions %}
-          <div class="log-entry">
-            <div class="log-info">
-              <span class="color-dot" style="background-color: {{ tx.color }}"></span>
-              <span class="log-name">{{ tx.username }}</span>
-              {% if tx.amount > 0 %}
-                <span class="log-amount positive">+{{ tx.amount }} DKK</span>
-              {% else %}
-                <span class="log-amount negative">−{{ tx.amount|abs }} DKK</span>
-              {% endif %}
-              <span class="log-time">{{ tx.created_at }}</span>
-            </div>
-            <form action="/delete_insertion" method="POST">
-              <input type="hidden" name="insertion_id" value="{{ tx.id }}">
-              <button type="submit" class="btn-small" aria-label="Delete transaction">✕</button>
-            </form>
-          </div>
-        {% endfor %}
+  <div class="log-entry">
+    <div class="log-info">
+      <span class="color-dot" style="background-color: {{ tx.color }}"></span>
+      <span class="log-name">{{ tx.username }}</span>
+      {% if tx.amount > 0 %}
+        <span class="log-amount positive">+{{ tx.amount }} DKK</span>
+      {% else %}
+        <span class="log-amount negative">−{{ tx.amount|abs }} DKK</span>
+      {% endif %}
+      {% if tx.is_valid_balance %}
+        <span class="tag">(CIB)</span>
+      {% endif %}
+      <span class="log-time">{{ tx.created_at }}</span>
+    </div>
+    <form action="/delete_insertion" method="POST">
+      <input type="hidden" name="insertion_id" value="{{ tx.id }}">
+      <button type="submit" class="btn-small" aria-label="Delete transaction">✕</button>
+    </form>
+  </div>
+{% endfor %}
+
       {% else %}
         <em>No transactions yet.</em>
       {% endif %}

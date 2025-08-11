@@ -8,6 +8,7 @@ pub fn get_money_insertion_from_club_id(conn: &Connection, club_id: i64) -> Resu
         users.username,
         users.color,
         money_insertions.amount,
+        money_insertions.is_valid_balance,
         money_insertions.created_at
     FROM 
         money_insertions
@@ -26,7 +27,8 @@ pub fn get_money_insertion_from_club_id(conn: &Connection, club_id: i64) -> Resu
             username: row.get(1)?,
             color: row.get(2)?,
             amount: row.get(3)?,
-            created_at: row.get(4)?,
+            is_valid_balance: row.get(4)?,
+            created_at: row.get(5)?,
         })
     })?;
     let mut insertions = Vec::new();
@@ -36,10 +38,30 @@ pub fn get_money_insertion_from_club_id(conn: &Connection, club_id: i64) -> Resu
     Ok(insertions)
 }
 
-pub fn insert_money_insertion_db(conn: &Connection, user_id: &str, amount: f64) -> Result<()> {
+pub fn get_user_money_insertions(conn: &Connection, user_id: i64) -> Result<Vec<f64>> {
+    let mut stmt = conn.prepare("
+        SELECT amount
+        FROM money_insertions
+        WHERE user_id = ?1;
+    ")?;
+
+    let amount_iter = stmt.query_map([user_id], |row| {
+        row.get(0)  // get amount directly as f64 (or f32 if you prefer)
+    })?;
+
+    let mut amounts = Vec::new();
+    for amount in amount_iter {
+        amounts.push(amount?);
+    }
+
+    Ok(amounts)
+}
+
+
+pub fn insert_money_insertion_db(conn: &Connection, user_id: &str, amount: f64, is_valid_balance: bool) -> Result<()> {
     conn.execute(
-        "INSERT INTO money_insertions (user_id, amount) VALUES (?1, ?2)",
-        params![user_id, amount],
+        "INSERT INTO money_insertions (user_id, amount, is_valid_balance) VALUES (?1, ?2, ?3)",
+        params![user_id, amount, is_valid_balance],
     )?;
     Ok(())
 }
