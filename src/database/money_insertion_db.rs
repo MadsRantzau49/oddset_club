@@ -57,6 +57,25 @@ pub fn get_user_money_insertions(conn: &Connection, user_id: i64) -> Result<Vec<
     Ok(amounts)
 }
 
+pub fn get_user_money_insertions_cib(conn: &Connection, user_id: i64) -> Result<Vec<f64>> {
+    let mut stmt = conn.prepare("
+        SELECT amount
+        FROM money_insertions
+        WHERE user_id = ?1 AND is_valid_balance = 1;
+    ")?;
+
+    let amount_iter = stmt.query_map([user_id], |row| {
+        row.get(0)  // get amount directly as f64 (or f32 if you prefer)
+    })?;
+
+    let mut amounts = Vec::new();
+    for amount in amount_iter {
+        amounts.push(amount?);
+    }
+
+    Ok(amounts)
+}
+
 
 pub fn insert_money_insertion_db(conn: &Connection, user_id: &str, amount: f64, is_valid_balance: bool) -> Result<()> {
     conn.execute(

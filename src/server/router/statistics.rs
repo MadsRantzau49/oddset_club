@@ -9,7 +9,7 @@ use crate::server::router::{render::render_template};
 use chrono::{NaiveDateTime, Utc, Duration};
 use crate::server::ResponseBody;
 use crate::database::players_db::{get_players_from_club_id};
-use crate::database::money_insertion_db::{get_user_money_insertions};
+use crate::database::money_insertion_db::{get_user_money_insertions, get_user_money_insertions_cib};
 use crate::database::database_structs::{UserStatistic};
 use std::collections::HashMap;
 
@@ -259,6 +259,18 @@ fn get_user_total_won(conn: &Connection, user_id: i64) -> i64 {
         }
         Err(e) => {println!("{e}");}
     }
+// count in balance (CIB)
+    match get_user_money_insertions_cib(&conn, user_id) {
+        Ok(insertions) => {
+            for insertion in insertions{
+                sum += insertion;
+            }
+        }
+        Err(_) => {}
+    }
+
+
+
     sum.round() as i64
 }
 
