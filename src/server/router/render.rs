@@ -36,7 +36,7 @@ pub fn render_set_session_cookie(name: &str, context: &Context, session_id: Stri
     return match TEMPLATES.render(&name, &context) {
         Ok(rendered) => 
         ResponseBody::Text(format!(
-            "HTTP/1.1 200 OK\r\nSet-Cookie: session_id={}; Path=/; HttpOnly\r\nContent-Length: {}\r\n\r\n{}", 
+            "HTTP/1.1 200 OK\r\nSet-Cookie: session_id={}; Path=/; HttpOnly; Max-Age=31536000\r\nContent-Length: {}\r\n\r\n{}", 
             session_id, rendered.len(), rendered
         )),
         Err(_) => render_error("Failed to set session cookie"),
