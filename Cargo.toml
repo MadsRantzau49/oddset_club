@@ -5,10 +5,10 @@ edition = "2024"
 
 [dependencies]
 rusqlite = { version = "0.31", features = ["bundled"] }
-urlencoding = "2.1.2"
 tera = "1.20.0"
 lazy_static = "1.5.0"
 uuid = {version= "1.17.0", features = ["v4"] }
 serde = { version = "1.0", features = ["derive"] }
 chrono = "0.4.41"
 calamine = "0.21"
+url = "2.5.7"

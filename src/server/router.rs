@@ -9,7 +9,7 @@ mod odds;
 mod statistics;
 mod app;
 use std::collections::HashMap;
-use urlencoding::decode;
+use url::form_urlencoded;
 use super::{ResponseBody};
 use crate::server::router::render::render_error;
 
@@ -111,6 +111,7 @@ pub fn route_request(request: &str) -> ResponseBody {
                 let amount_str = form_data.get("amount").map(String::as_str).unwrap_or("");
                 let amount: f64 = amount_str.parse().unwrap_or(0.0);
                 let description = form_data.get("description").map(String::as_str).unwrap_or("");
+                println!("{}", description);
                 debt::insert_debt(user_id, amount, description, club_id)
             },
             "/mark_paid" => {
@@ -166,14 +167,9 @@ fn parse_urlencoded_form_data(request: &str) -> HashMap<String, String> {
     };
     let body = &request[body_start..];
 
-    // Split key=value pairs
-    for pair in body.split('&') {
-        let mut parts = pair.splitn(2, '=');
-        if let (Some(key), Some(value)) = (parts.next(), parts.next()) {
-            let key = decode(key).unwrap_or_default();
-            let value = decode(value).unwrap_or_default();
-            form_data.insert(key.to_string(), value.to_string());
-        }
+    // Properly decode according to x-www-form-urlencoded rules
+    for (key, value) in form_urlencoded::parse(body.as_bytes()) {
+        form_data.insert(key.into_owned(), value.into_owned());
     }
 
     form_data
