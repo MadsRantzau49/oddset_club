@@ -7,6 +7,7 @@ pub mod session_db;
 pub mod money_insertion_db;
 pub mod debt_db;
 pub mod odds_db;
+pub mod sql;
 
 pub fn establish_connection() -> Result<Connection> {
     Connection::open("data/database.db")
