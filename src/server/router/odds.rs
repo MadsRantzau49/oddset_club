@@ -169,9 +169,6 @@ pub fn insert_odds_from_excel(club_id: i64) -> ResponseBody {
 
         let is_freebet = user_id == 6;
         
-
-
-        println!("{} {} {} {} {} {} {} {} {}",user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet, created_at);
         match insert_sheet_odds_db(&conn, user_id, stake, odds, potential_win, description, result, is_volunteer_bet, is_gain_freebet, created_at, is_freebet){
             Ok(_) => {}
             Err(e) => {println!("{}\n",e)}

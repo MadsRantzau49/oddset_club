@@ -111,7 +111,6 @@ pub fn route_request(request: &str) -> ResponseBody {
                 let amount_str = form_data.get("amount").map(String::as_str).unwrap_or("");
                 let amount: f64 = amount_str.parse().unwrap_or(0.0);
                 let description = form_data.get("description").map(String::as_str).unwrap_or("");
-                println!("{}", description);
                 debt::insert_debt(user_id, amount, description, club_id)
             },
             "/mark_paid" => {
