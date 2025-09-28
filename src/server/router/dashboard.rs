@@ -16,7 +16,6 @@ pub fn load_dashboard_context(club_id: i64) -> Context {
             } else {
                 0.0  
             };
-            println!("{current_money}   {progress_percent}");
             
             context.insert("progress_percent", &progress_percent.round()); 
             context.insert("current_money", &get_total_money(&conn,club_id));
