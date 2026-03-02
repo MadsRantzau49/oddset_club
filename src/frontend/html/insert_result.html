@@ -95,19 +95,7 @@
       cursor: pointer;
     }
 
-    .delete-button {
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 0.4rem 0.7rem;
-      border-radius: 0.4rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
 
-    .delete-button:hover {
-      background-color: #e60000;
-    }
 
     .edit-button {
       background-color: #f8a100;
@@ -272,10 +260,7 @@
                 <input type="hidden" name="odds_id" value="{{ odds.id }}">
                 <button class="edit-button" type="submit">✏️</button>
               </form>
-              <form method="POST" action="/delete_odds" style="margin: 0;">
-                <input type="hidden" name="odds_id" value="{{ odds.id }}">
-                <button class="delete-button" type="submit">✕</button>
-              </form>
+
             </div>
             {% if odds.description %}
               <div class="description">{{ odds.description }}</div>

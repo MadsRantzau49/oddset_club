@@ -168,6 +168,20 @@
       transform: rotate(45deg);
     }
 
+        .delete-button {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.7rem;
+      border-radius: 0.4rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .delete-button:hover {
+      background-color: #e60000;
+    }
+
 .flash-message {
     background-color: #0c76da;
     color: #ffffff;
@@ -312,6 +326,15 @@
 <input type="hidden" name="id" value="{{ odds.id }}">
       <button type="submit">Update Odds</button>
     </form>
+<br>
+<br>
+<br>
+<br>
+<form method="POST" action="/delete_odds" style="margin: 0;"
+      onsubmit="return confirm('Are you sure you want to delete this Odds?');">
+  <input type="hidden" name="odds_id" value="{{ odds.id }}">
+  <button class="delete-button" type="submit">✕</button>
+</form>
   </main>
 
 <script>
