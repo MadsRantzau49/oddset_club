@@ -109,6 +109,20 @@
       background-color: #e60000;
     }
 
+    .edit-button {
+      background-color: #f8a100;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.7rem;
+      border-radius: 0.4rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .edit-button:hover {
+      background-color: #e66f00;
+    }
+
     .back-button {
       position: absolute;
       top: 1rem;
@@ -209,6 +223,10 @@
                   <option value="2">Loss</option>
                 </select>
               </form>
+              <form method="POST" action="/edit_odds" style="margin: 0;">
+                <input type="hidden" name="odds_id" value="{{ odds.id }}">
+                <button class="edit-button" type="submit">✏️</button>
+              </form>
               <form method="POST" action="/delete_odds" style="margin: 0;">
                 <input type="hidden" name="odds_id" value="{{ odds.id }}">
                 <button class="delete-button" type="submit">✕</button>
@@ -250,6 +268,10 @@
                   ❌ Loss
                 {% endif %}
               </div>
+              <form method="POST" action="/edit_odds" style="margin: 0;">
+                <input type="hidden" name="odds_id" value="{{ odds.id }}">
+                <button class="edit-button" type="submit">✏️</button>
+              </form>
               <form method="POST" action="/delete_odds" style="margin: 0;">
                 <input type="hidden" name="odds_id" value="{{ odds.id }}">
                 <button class="delete-button" type="submit">✕</button>

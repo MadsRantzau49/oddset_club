@@ -10,6 +10,51 @@ pub fn insert_odds_db(conn: &Connection, user_id: &str, stake: f64, odds: f64, p
     Ok(())
 }
 
+pub fn update_odds_db(
+    conn: &Connection,
+    odds_id: &str,
+    user_id: &str,
+    stake: f64,
+    odds: f64,
+    potential_win: f64,
+    description: &str,
+    result: i64,
+    is_volunteer_bet: bool,
+    is_gain_freebet: bool,
+    is_freebet: bool,
+) -> Result<()> {
+    conn.execute(
+        "
+        UPDATE odds
+        SET
+            user_id = ?1,
+            stake = ?2,
+            odds = ?3,
+            potential_win = ?4,
+            description = ?5,
+            result = ?6,
+            is_volunteer_bet = ?7,
+            is_gain_freebet = ?8,
+            is_freebet = ?9
+        WHERE id = ?10
+        ",
+        params![
+            user_id,
+            stake,
+            odds,
+            potential_win,
+            description,
+            result,
+            is_volunteer_bet,
+            is_gain_freebet,
+            is_freebet,
+            odds_id
+        ],
+    )?;
+
+    Ok(())
+}
+
 pub fn get_all_odds_data_from_club_id(conn: &Connection, club_id: i64) -> Result<Vec<Odds>> {
     let mut stmt = conn.prepare("
     SELECT 
@@ -164,4 +209,46 @@ pub fn delete_all_odds(conn: &Connection) -> Result<()> {
         [],
     )?;
     Ok(())
+}
+
+pub fn get_odds_by_id(conn: &Connection, odds_id: &str) -> Result<Odds> {
+    conn.query_row(
+        "
+        SELECT 
+            o.id,
+            o.user_id,
+            u.username,
+            u.color,
+            o.stake,
+            o.odds,
+            o.potential_win,
+            o.description,
+            o.result,
+            o.is_volunteer_bet,
+            o.is_gain_freebet,
+            o.is_freebet,
+            o.created_at
+        FROM odds o
+        JOIN users u ON o.user_id = u.id
+        WHERE o.id = ?1
+        ",
+        [odds_id],
+        |row| {
+            Ok(Odds {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                username: row.get(2)?,
+                color: row.get(3)?,
+                stake: row.get(4)?,
+                odds: row.get(5)?,
+                potential_win: row.get(6)?,
+                description: row.get(7)?,
+                result: row.get(8)?,
+                is_volunteer_bet: row.get(9)?,
+                is_gain_freebet: row.get(10)?,
+                is_freebet: row.get(11)?,
+                created_at: row.get(12)?,
+            })
+        },
+    )
 }

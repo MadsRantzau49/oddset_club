@@ -145,6 +145,25 @@ pub fn route_request(request: &str) -> ResponseBody {
                 if club_id == 0{return render_error("Session died");}
                 let odds_id = form_data.get("odds_id").map(String::as_str).unwrap_or("");
                 odds::delete_odds(club_id, odds_id)
+            },
+            "/edit_odds" => {
+                if club_id == 0{return render_error("Session died");}
+                let odds_id = form_data.get("odds_id").map(String::as_str).unwrap_or("");
+                odds::edit_odds(odds_id, club_id)
+            }
+            "/update_odds" => {
+                if club_id == 0{return render_error("Session died");}
+                let odds_id = form_data.get("id").map(String::as_str).unwrap_or("");
+                let user_id = form_data.get("user_id").map(String::as_str).unwrap_or("");
+                let description = form_data.get("description").map(String::as_str).unwrap_or("");
+                let stake = get_f64(&form_data, "stake");
+                let odds = get_f64(&form_data, "odds");
+                let potential_win = get_f64(&form_data, "potential_win");
+                let is_volunteer_bet = get_bool(&form_data, "volunteer_bet");
+                let is_gain_freebet = get_bool(&form_data, "gain_freebet");
+                let is_freebet = get_bool(&form_data, "is_freebet");
+                let result = get_i64(&form_data, "result");    
+                odds::update_odds(club_id,odds_id, user_id, stake, odds, potential_win, description, is_volunteer_bet, is_gain_freebet, is_freebet, result)
             }
             _ => render_error("404 page not found"),
         

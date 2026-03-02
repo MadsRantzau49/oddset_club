@@ -1,6 +1,6 @@
 use tera::Context;
 use crate::database::players_db::{get_players_from_club_id};
-use crate::database::odds_db::{insert_odds_db, get_all_odds_data_from_club_id, insert_result_db, get_number_of_unresolved_odds_db, delete_odds_db,insert_sheet_odds_db, delete_all_odds};
+use crate::database::odds_db::{insert_odds_db, update_odds_db, get_all_odds_data_from_club_id, insert_result_db, get_number_of_unresolved_odds_db, delete_odds_db,insert_sheet_odds_db, delete_all_odds, get_odds_by_id};
 use crate::database::club_db::{get_club_settings_from_id};
 use crate::database::establish_connection;
 use crate::server::router::render::{get_html, render_error, render_template};
@@ -24,6 +24,21 @@ pub fn insert_odds(club_id: i64, user_id: &str, stake: f64, odds: f64, potential
         }
     }
     render_template("add_odds.html", &context)
+}
+
+pub fn update_odds(club_id: i64, odds_id: &str, user_id: &str, stake: f64, odds: f64, potential_win: f64, description: &str, is_volunteer_bet: bool, is_gain_freebet: bool, is_freebet: bool, result: i64) -> ResponseBody {
+    let conn = establish_connection().expect("Could not connect to DB");
+    let mut context = get_insert_odds_context(club_id);
+    match update_odds_db(&conn, odds_id, user_id, stake, odds, potential_win, description, result ,is_volunteer_bet, is_gain_freebet, is_freebet) {
+        // Useless as context never used but i dont wanna fix :D
+        Ok(_) => {
+            context.insert("message", "Odds Updated succesfully");
+        }
+        Err(_) => {
+            context.insert("message", "Odds failed to be updated");
+        }
+    }
+    render_insert_odds(club_id)
 }
 
 pub fn render_insert_odds(club_id: i64) -> ResponseBody {
@@ -175,4 +190,21 @@ pub fn insert_odds_from_excel(club_id: i64) -> ResponseBody {
         }
     }
     get_html("dashboard.html", club_id)
+}
+
+pub fn edit_odds(odds_id: &str, club_id: i64) -> ResponseBody{
+    let conn = establish_connection().expect("Failed to connect to db");
+    let mut context = Context::new();
+    match get_players_from_club_id(&conn, club_id) {
+        Ok(users) => { context.insert("users",&users); }
+        Err(_) => {return render_error("Could not found users from odds you wanna update");}
+    }
+    match get_odds_by_id(&conn, odds_id){
+        Ok(odds) => {
+            context.insert("odds",&odds);
+
+            return render_template("update_odds.html", &context)
+        }
+        Err(_) => {return render_error("Could not found update odds");}
+    };
 }
